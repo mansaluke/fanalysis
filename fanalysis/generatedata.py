@@ -9,6 +9,7 @@ class data:
         self.p, self.f = p, f
     try:
         def genseries(self):
+            '''generates data'''
             try:
                 times = pd.date_range(end=datetime.now(), periods=self.p, freq=self.f)
             except:
@@ -45,6 +46,7 @@ while uf:
                 p = int(p)
                 d = data(p, f)
                 df = d.genseries()
+                print(df)
                 if not isinstance(df, str):
                     uf = False
                 break
@@ -55,8 +57,6 @@ while uf:
             break
     else:
         print('response not recognised. Please try again.')
-
-
 
 
 

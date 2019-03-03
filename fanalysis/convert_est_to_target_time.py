@@ -7,6 +7,7 @@ from datetime import timedelta
 if __name__ == '__main__':
 
     args = sys.argv
+    print(args)
     if len(args) != 3:
         print('Usage: {0} <filename> <time zone difference>\n' \
               'Example: {0} DAT_ASCII_EURJPY_M1_201705.csv +13'.format(args[0].split(os.sep)[-1]))

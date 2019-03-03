@@ -1,3 +1,6 @@
+python >= 3.7
 matplotlib >= 3.0.2
 numpy >=1.16.0
 pandas >= 0.24.0
+requests
+bs4

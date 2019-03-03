@@ -1,7 +1,7 @@
-import generatedata
-try:
-    df = generatedata.df
-    print(df)
-except:
-    pass
+import extract as e
+df = e.df
+
+import dftojson 
+
+
 
