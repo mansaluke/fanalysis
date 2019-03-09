@@ -1,8 +1,5 @@
-########download historical data
-#git clone https://github.com/philipperemy/FX-1-Minute-Data.git fx
-#if __name__ == '__main__':
-#    download_fx_m1_data_year()
-#download all months needed. in this example i download all of 2018
+########download historical data before using this file (get_fx_m1)
+
 from datetime import datetime
 import os
 import pandas  as pd

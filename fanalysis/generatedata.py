@@ -30,7 +30,6 @@ class data:
     
 
 print('you will need to choose the frequency and number of periods of the data. e.g. 10 days')
-
 uf = True
 
 while uf:
@@ -57,16 +56,5 @@ while uf:
             break
     else:
         print('response not recognised. Please try again.')
-
-
-
-
-
-
-
-
-
-
-
 
 
