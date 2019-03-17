@@ -1,9 +1,9 @@
+#to parquet, feather, mongodb, csv
 import pandas as pd
 import json
-import random as rd
 import os
 from datetime import datetime
-
+import pyarrow.parquet as pq
 #times = pd.date_range(start=datetime.now(), periods= 1000, freq='d')
 #t=[]
 #for i in range(len(times)):
@@ -27,4 +27,8 @@ def dftojson(df):
         print(f.read())
     else:
         print('none')
+
+def dftoparquet(df):
+    table = pd.Table.from_pandas(df, preserve_index=False)
+    pq.write_table(table, 'x.parquet')
 

@@ -22,7 +22,7 @@ def mkfile(file):
     except FileExistsError:
        pass
 
-def month_year_iter(start_month, start_year):
+def month_year_iter_download(start_month, start_year, currency_pair_code,output_folder):
     '''Downloads all periods from starting month/year to most recent'''
     first_day_current_month = date.today().replace(day=1)
     last_day_previous_month = first_day_current_month - timedelta(days=1)
@@ -32,21 +32,41 @@ def month_year_iter(start_month, start_year):
     ym_end= 12*end_year + end_month - 1
 
     collectym = {}
+    collecty = []
     for ym in range( ym_start, ym_end ):
         ##print(ym)
         y, m = divmod( ym, 12 )
         print(y, m, start_month, end_month)
+        #collectym[y] = m
         if m== 1:
-            collectym[y] = m
-    #for k in collectym:
-    #    print(k)
+            collecty.append(y)
+    print(collecty)
+    print(collectym)
+    for k in collecty[1:-1]:
+        print(k)
+        try:
+            while True:
+                could_download_full_year = False
+                try:
+                    output_filename = download_fx_m1_data_year(k, currency_pair_code)
+                    shutil.move(output_filename, os.path.join(output_folder, output_filename))
+                    could_download_full_year = True
+                except:
+                    pass  #download month by month.
+                month = 1
+                while not could_download_full_year and month <= 12:
+                    output_filename = download_fx_m1_data(str(k), str(month), currency_pair_code)
+                    shutil.move(output_filename, os.path.join(output_folder, output_filename))
+                    month += 1
+                #year += 1
+        except Exception as e:
+            print('[DONE] for currency', currency_pair_name)
 
 
         
         
-month_year_iter(12, 2010)        
-
-        #download_fx_m1_data(y, m+1, 'eurgbp')
+#month_year_iter(12, 2010)        
+ #download_fx_m1_data(y, m+1, 'eurgbp')
 
 mkdir_p('fanalysis/data')
 
