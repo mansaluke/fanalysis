@@ -1,52 +1,53 @@
 import pandas as pd
-#create data
-#l = len(df)
-rand = []
-for r in enumerate(df):
-    rand.append(rd.random())
-rand = pd.Series(rand, name = 'rand')
-df = pd.concat([df, rand], axis = 1, join = 'inner')
+import random as rd
+import json
+from datetime import datetime
+from calendar import monthrange
+
+def add_rand(df):
+    rand = []
+    for r in range(len(df)):
+        rand.append(rd.random())
+    rand = pd.Series(rand, name = 'randseries')
+    df = pd.concat([df, rand], axis = 1)
+    return df
 
 
 #funciton to extract date elements (not used for now)
 def datesplit(df):
-    df = df.copy()
+    #df = df.copy()
     df['day'] = pd.DatetimeIndex(df['date']).day
     df['month'] = pd.DatetimeIndex(df['date']).month
     df['week'] = pd.DatetimeIndex(df['date']).week
     df['year'] = pd.DatetimeIndex(df['date']).year
+    df['aggdaybyyear'] = df[df['month']>1].apply(lambda row: monthrange(row['year'], row['month']), axis=1)
+    df[['a', 'aggdaybyyear']] = df['aggdaybyyear'].apply(pd.Series)
+    df.drop(columns=['a'], inplace=True)
+    df.loc[df['month'] ==1, 'aggdaybyyear'] = 0
+    df['aggdaybyyear'] = df['aggdaybyyear'] + df['day']
+    df['totaldays']=df['aggdaybyyear'].cumsum()
     return df
-df = datesplit(df)
 
 
-df['aggday'] = df[df['month']>1].apply(lambda row: monthrange(row['year'], row['month']), axis=1)
+def lag_var(df, var, lags):
+    df[var+'_lag'+str(lags)]=df[var].shift(lags)
+    return df
 
-df[['a', 'aggday']] = df['aggday'].apply(pd.Series)
+#if __name__ == '__main__':
+#    import main
+#    #userinput()
+#    df=jload('x.json')
+#    df = add_rand(df)
+#    df = datesplit(df)
+#    df = lag_var(df, 'rnd', -1)
+#    print(df.head())
 
-df.drop(columns=['a'], inplace=True)
+if __name__ == '__main__':
+    df.drop
+    print(df)
+    import extract
+    df = add_rand(df)
+    df = datesplit(df)
+    #df = lag_var(df, 'd1', -1)
+    print(df.head())
 
-df.loc[df['month'] ==1, 'aggday'] = 0
-df['aggday'] = df['aggday'] + df['day']
-print(df.head())
-print(df.info())
-
-print(datetime.now())
-#out = df.to_json(orient='split')
-#
-#with open('temp.json', 'w') as f:
-#    f.write(out)
-fd.to_json('temp.json', orient='index')
-print(datetime.now())
-
-df['TS'] =  0.1 * df['aggday'] - df['rand'] *0.1 
-print(df.head())
-plt.plot(df['date'], df['TS'])
-plt.title('TS')
-plt.ylabel('Price (£)')
-plt.show()
-
-mean = df['d1'].mean()
-print(mean)
-
-variance = statistics.variance(df['d1'])
-print(variance)

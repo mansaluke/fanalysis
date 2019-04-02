@@ -1,4 +1,4 @@
-########download historical data before using this file (get_fx_m1)
+########download historical data first (get_fx_m1)
 
 from datetime import datetime
 import os
@@ -8,11 +8,11 @@ from calendar import monthrange
 import sys
 import time
 
-if not os.path.exists('fanalysis/data'):
-    print('data directory not found. Please create the fanalysis/data folder amd try again')
-    os._exit(1)
+if not os.path.exists('data'):
+    print('data directory not found. Please create the data folder amd try again')
+    #os._exit(1)
 #collect files from data folder
-files = os.listdir('fanalysis/data') #use os.getcwd() if files in same path. otherwise set path
+files = os.listdir('data') #use os.getcwd() if files in same path. otherwise set path
 def strlistconcat (input, str):
     l = len(input)
     list = []
@@ -22,7 +22,7 @@ def strlistconcat (input, str):
     input = list
     return input
 
-files = strlistconcat(files, "fanalysis/data/")
+files = strlistconcat(files, "data/")
 
 #read and combine data
 headers = ['date', 'd1', 'd2', 'd3', 'd4', 'v']
@@ -50,18 +50,26 @@ print(df[:10])
 #df['date'] = df['date'].apply(lambda x: datetime.strptime(x, '%Y%m%d %H%M%S'))
 df.set_index('date')
 
-#graph
-plt.rcParams['figure.figsize'] = (15, 5)
-#df['d2'].plot()
-#df = df.cumsum()
-#plt.figure(); df.plot();plt.legend(loc='best')
-for h in headers[1:-1]:
-    plt.plot(df['date'], df[h])
-    plt.title('USD ($)/Pound Sterling (£)' + colnames[h])
-    plt.ylabel('Price (£)')
-    plt.pause(0.01)
-    plt.show(block=False)
-    time.sleep(0.5)
-    plt.close
-    #plt.gcf()
+
+import structure
+df = add_rand(df)
+df = datesplit(df)
+print(df.columns)
+#df = lag_var(df, 'd1', -1)
+print(df.head())
+
+def graph_vars():
+    plt.rcParams['figure.figsize'] = (15, 5)
+    #df['d2'].plot()
+    #df = df.cumsum()
+    #plt.figure(); df.plot();plt.legend(loc='best')
+    for h in headers[1:-1]:
+        plt.plot(df['date'], df[h])
+        plt.title('Eur/Pound Sterling (£)' + colnames[h])
+        plt.ylabel('Price (£)')
+        plt.pause(0.01)
+        plt.show(block=False)
+        time.sleep(0.5)
+        plt.close
+        #plt.gcf()
 

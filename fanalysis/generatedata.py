@@ -14,19 +14,20 @@ class data:
                 times = pd.date_range(end=datetime.now(), periods=self.p, freq=self.f)
             except:
                 print("Cannot generate that many periods. Please try again")
-                l = 'end'
-            if 'l' not in locals():
+                d = 'end'
+            if 'd' not in locals():
                 t=[]
                 for i in range(len(times)):
                     t.append(times[i])
                 rnd=[]
                 for i in range(self.p):
                     rnd.append(rd.random())
-                l = pd.DataFrame( rnd, times, columns=['rnd'])
-            return l
+                d = pd.DataFrame( rnd, times, columns=['rnd'])
+                d.index.name = 'date'
+            return d
     except ValueError as err1:
         print("Cannot generate that many periods. Please try again")
-        l = "end"
+        d = "end"
     
 
 print('you will need to choose the frequency and number of periods of the data. e.g. 10 days')
@@ -56,5 +57,4 @@ while uf:
             break
     else:
         print('response not recognised. Please try again.')
-
 

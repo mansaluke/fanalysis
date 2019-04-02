@@ -43,7 +43,7 @@ jsontype = '.json'
 def userinput():
     l = True
     while l:
-        c = input('do you want to create data or use existing data. (enter c for create, e for existing and t to terminate process) ')
+        c = input('do you want to create data or use existing data. (enter c to create, e to existing and t to terminate process) ')
         c=c.lower()
         if c =='e':
             if not any(fname.endswith(jsontype) for fname in files):
@@ -52,6 +52,7 @@ def userinput():
             df = jload('x.json')
             print(df[:10])
             l = False
+            return df
             break
         elif c=='c': 
             import generatedata
@@ -59,6 +60,7 @@ def userinput():
                 df = generatedata.df
                 dftojson(df)
                 print(df)
+                return df
             except:
                 print('something went wrong')
                 pass
@@ -72,7 +74,9 @@ def userinput():
             print('Response not recognised')
             #l = False
             #continue
-userinput()            
 
+if __name__== '__main__':
+    df = userinput()   
+    #df = jload('x.json')
 
 
