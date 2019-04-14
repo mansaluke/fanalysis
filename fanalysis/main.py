@@ -3,7 +3,7 @@ import json
 from pprint import pprint
 
 
-def dftojson(df):
+def df_to_json(df):
     import pandas as pd
     import json
     import random as rd
@@ -27,7 +27,7 @@ def dftojson(df):
     f=open('x.json', 'r')
     print(f.read())
 
-def jload(jfile):
+def json_load(jfile):
     import pandas as pd
     with open(jfile, 'r') as f:
         df = json.load(f)
@@ -40,7 +40,7 @@ files = os.listdir('.')
 jsontype = '.json'
 
 
-def userinput():
+def user_input():
     l = True
     while l:
         c = input('do you want to create data or use existing data. (enter c to create, e to existing and t to terminate process) ')
@@ -48,8 +48,8 @@ def userinput():
         if c =='e':
             if not any(fname.endswith(jsontype) for fname in files):
                 import extract as e
-                dftojson(e.df)
-            df = jload('x.json')
+                df_to_json(e.df)
+            df = json_load('x.json')
             print(df[:10])
             l = False
             return df
@@ -58,7 +58,7 @@ def userinput():
             import generatedata
             try:
                 df = generatedata.df
-                dftojson(df)
+                df_to_json(df)
                 print(df)
                 return df
             except:
@@ -76,7 +76,7 @@ def userinput():
             #continue
 
 if __name__== '__main__':
-    df = userinput()   
-    #df = jload('x.json')
+    df = user_input()   
+    #df = json_load('x.json')
 
 

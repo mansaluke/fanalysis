@@ -5,23 +5,33 @@ Created on Sun Mar 31 16:23:50 2019
 @author: Luke
 """
 
-#import main
-#df = jload('x.json')
-#
-#import structure
-#df = add_rand(df)
-#df = datesplit(df)
-#df = lag_var(df, 'rnd', -1)
-#
-#print(df.head())
 
-print("start")
-import extract
+x = 1
 
+import main as e
+if x == 1:
+    #import main
+    df = e.user_input()
+    #df = main.json_load('x.json')
+elif x == 2:
+    
+    df = e.use_csvs()
+
+import structure as s
+df = s.date_split(df)
 print(df)
-import structure
-df = add_rand(df)
-df = datesplit(df)
-df = lag_var(df, 'rnd', -1)
+#df = s.add_rand(df)
+#df = s.lag_var(df, 'rnd', -1)
 
-df.drop
+#df['ts'] = df['aggdays'] *0.2 + + df['rnd']
+#
+#
+#print(df[['date', 'ts']])
+#print(df.columns)
+#
+#
+#import matplotlib.pyplot as plt
+
+#plt.plot(df['date'], df['day'])
+
+

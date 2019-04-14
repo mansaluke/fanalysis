@@ -3,7 +3,9 @@ import random as rd
 import json
 from datetime import datetime
 from calendar import monthrange
+from numba import jit, generated_jit
 
+@jit
 def add_rand(df):
     rand = []
     for r in range(len(df)):
@@ -13,41 +15,47 @@ def add_rand(df):
     return df
 
 
-#funciton to extract date elements (not used for now)
-def datesplit(df):
+
+def date_split(df):
     #df = df.copy()
-    df['day'] = pd.DatetimeIndex(df['date']).day
+    df['year'] = pd.DatetimeIndex(df['date']).year
     df['month'] = pd.DatetimeIndex(df['date']).month
     df['week'] = pd.DatetimeIndex(df['date']).week
-    df['year'] = pd.DatetimeIndex(df['date']).year
-    df['aggdaybyyear'] = df[df['month']>1].apply(lambda row: monthrange(row['year'], row['month']), axis=1)
-    df[['a', 'aggdaybyyear']] = df['aggdaybyyear'].apply(pd.Series)
-    df.drop(columns=['a'], inplace=True)
-    df.loc[df['month'] ==1, 'aggdaybyyear'] = 0
-    df['aggdaybyyear'] = df['aggdaybyyear'] + df['day']
-    df['totaldays']=df['aggdaybyyear'].cumsum()
+    df['day'] = pd.DatetimeIndex(df['date']).day
+    df['hour'] = pd.DatetimeIndex(df['date']).hour
+    #df['daysinmonth'] = df.apply(lambda row: monthrange(row['year'], row['month']), axis=1).str[1]
+    df['not_dupym'] = 1 - df[['month', 'year']].duplicated()
+    df = df.merge(
+    df[df['not_dupym']==1].groupby(['year', 'month'], as_index=False)['year', 'month'].sum().apply(lambda row: monthrange(row['year'].astype('int'), row['month'].astype('int')), axis=1).str[1].reset_index().rename(columns={0:"daysinmonth"})
+, on = ['year', 'month'], how = 'left')
+    df = df.merge(
+    df[df['not_dupym']==1].groupby(['year', 'month'])
+    ['daysinmonth'].sum().cumsum().reset_index().groupby(['year','daysinmonth'])
+    ['month'].sum().transform(lambda x: x+1).reset_index()
+, on = ['year', 'month'], how = 'left')
+    df['aggdays']=df['daysinmonth_y'].fillna(0).astype('int') + df['day']
+    df.drop(columns=['daysinmonth_x','daysinmonth_y', 'not_dupym'], inplace=True)
     return df
 
-
+@jit
 def lag_var(df, var, lags):
     df[var+'_lag'+str(lags)]=df[var].shift(lags)
     return df
 
-#if __name__ == '__main__':
-#    import main
-#    #userinput()
-#    df=jload('x.json')
-#    df = add_rand(df)
-#    df = datesplit(df)
-#    df = lag_var(df, 'rnd', -1)
-#    print(df.head())
 
+x=0
 if __name__ == '__main__':
-    df.drop
-    print(df)
-    import extract
+    if x == 0:
+        import main
+        df=main.json_load('x.json')
+    elif x ==1:
+        import extract
+        df = use_csvs()
+        
     df = add_rand(df)
-    df = datesplit(df)
+    df = date_split(df)
     #df = lag_var(df, 'd1', -1)
-    print(df.head())
+    print(df.columns)
+    print(df[['date', 'day', 'month', 'year', 'aggdays']])
+
 

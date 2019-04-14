@@ -29,6 +29,6 @@ def dftojson(df):
         print('none')
 
 def dftoparquet(df):
-    table = pd.Table.from_pandas(df, preserve_index=False)
+    table = pd.Table.from_pandas(df, preserve_index=True)
     pq.write_table(table, 'x.parquet')
 
