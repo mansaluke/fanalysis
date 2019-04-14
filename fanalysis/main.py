@@ -48,7 +48,8 @@ def user_input():
         if c =='e':
             if not any(fname.endswith(jsontype) for fname in files):
                 import extract as e
-                df_to_json(e.df)
+                df =e.use_csvs()
+                df_to_json(df)
             df = json_load('x.json')
             print(df[:10])
             l = False

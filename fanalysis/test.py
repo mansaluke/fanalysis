@@ -20,8 +20,8 @@ elif x == 2:
 import structure as s
 df = s.date_split(df)
 print(df)
-#df = s.add_rand(df)
-#df = s.lag_var(df, 'rnd', -1)
+df = s.add_rand(df)
+df = s.lag_var(df, 'rnd', -1)
 
 #df['ts'] = df['aggdays'] *0.2 + + df['rnd']
 #
@@ -32,6 +32,6 @@ print(df)
 #
 #import matplotlib.pyplot as plt
 
-#plt.plot(df['date'], df['day'])
+plt.plot(df['date'], df['day'])
 
 
