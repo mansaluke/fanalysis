@@ -24,10 +24,12 @@ class data:
                     rnd.append(rd.random())
                 d = pd.DataFrame( rnd, times, columns=['rnd'])
                 d.index.name = 'date'
+                print("data created")
             return d
     except ValueError as err1:
         print("Cannot generate that many periods. Please try again")
         d = "end"
+
     
 
 print('you will need to choose the frequency and number of periods of the data. e.g. 10 days')
@@ -46,7 +48,7 @@ while uf:
                 p = int(p)
                 d = data(p, f)
                 df = d.genseries()
-                print(df)
+                print(df.head())
                 if not isinstance(df, str):
                     uf = False
                 break

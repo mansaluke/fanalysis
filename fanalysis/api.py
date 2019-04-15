@@ -48,7 +48,7 @@ def download_fx_m1_data_year(year='2018', pair='eurgbp'):
     assert len(r.content) > 0, 'No data could be found here.'
     print(data)
 
-    output_filename = 'DAT_ASCII_{}_M1_{}.zip'.format(pair.upper(), '{}'.format(year))
+    output_filename = 'data\DAT_ASCII_{}_M1_{}.zip'.format(pair.upper(), '{}'.format(year))
     with open(output_filename, 'wb') as f:
         for chunk in r.iter_content(chunk_size=1024):
             if chunk:
@@ -104,7 +104,7 @@ def download_fx_m1_data(year='2019', month ='1', pair='eurgbp'):
     assert len(r.content) > 0, 'No data could be found here.'
     print(data)
 
-    output_filename = 'DAT_ASCII_{}_M1_{}.zip'.format(pair.upper(), '{}{}'.format(year, str(month).zfill(2)))
+    output_filename = 'data\DAT_ASCII_{}_M1_{}.zip'.format(pair.upper(), '{}{}'.format(year, str(month).zfill(2)))
     with open(output_filename, 'wb') as f:
         for chunk in r.iter_content(chunk_size=1024):
             if chunk:

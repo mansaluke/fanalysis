@@ -5,28 +5,13 @@ from datetime import timedelta
 from datetime import date
 from api import download_fx_m1_data, download_fx_m1_data_year
 import pandas as pd
-
-def mkdir_p(path):
-    import errno
-    try:
-        os.makedirs(path)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else:
-            raise
-
-
-
-#def mk_file(file):
-#    try:
-#       open(file, 'x')
-#    except FileExistsError:
-#       pass
+from extract import mkdir_p
+import zipfile
 
 
 def delete_old_data(path):
     files = os.listdir(path) #use os.getcwd() if files in same path. otherwise set path
+    print(files)
     from extract import str_listconcat
     files = str_listconcat(files, path + '/')
     print('Existing files in the '+path+' folder will be deleted.')
@@ -37,12 +22,52 @@ def delete_old_data(path):
         pass
     else:
         for f in files: 
-            #os.remove(f)
+            os.remove(f)
             print(f+ ' DELETED')
-    
 
-    
-    
+
+
+def unzip_files(path):
+    files = os.listdir(path) #use os.getcwd() if files in same path. otherwise set path
+    from extract import str_listconcat
+    print(files)
+    try:
+        files = str_listconcat(files, path + '/')
+        print('Existing files in the '+path+' folder will be unzipped.')
+        for f in files: 
+            print(f)
+        f = input('Press s to skip this step or any other key to unzip the files. ')
+        if f == 's':
+            pass
+        else:
+            for f in files: 
+                with zipfile.ZipFile(f,"r") as zip_ref:
+                    zip_ref.extractall(path)
+                #os.remove(f)
+                print(f+ ' UNZIPPED')
+    except:
+        print("no files found")
+
+
+
+def delete_zip_files(path):
+    files = os.listdir(path) #use os.getcwd() if files in same path. otherwise set path
+    print(files)
+    from extract import str_listconcat
+    files = [f for f in files if f[-3:] == 'zip']
+    files = str_listconcat(files, path + '/')
+    print('Zip files in the '+path+' folder will be deleted.')
+    for f in files: 
+        print(f)
+    f = input('Press s to skip this step or any other key to delete the files. ')
+    if f == 's':
+        pass
+    else:
+        for f in files: 
+            os.remove(f)
+            print(f+ ' DELETED')
+
+
 
 def try_year_download(y, currency_pair_code):
     try:
@@ -104,6 +129,7 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
             if end_month != 12:
                 for m in range(1, end_month+1):
                     print(end_year, m)
+                    download_fx_m1_data(end_year, m, currency_pair_code)
                     
             else:
                 print(end_year)
@@ -113,6 +139,7 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
         if end_month !=12:
             for m in range(1, end_month+1):
                 print(start_year, m)
+                download_fx_m1_data(end_year, m, currency_pair_code)
                 
         elif end_month ==12:
             print(end_year)
@@ -122,6 +149,11 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
 
      
 if __name__ == '__main__':
-    mkdir_p('data')
-    month_year_iter_download(2, 2010, 'eurgbp','data')
-
+    print("choose the starting period and currency e.g. 2018 5 eurgbp")
+    path = mkdir_p('data')
+    y = int(input("enter start year e.g.2017:"))
+    m = int(input("enter start month as an integer i.e for january enter 1:"))
+    c = input("enter currency code e.g. eurgbp for euro to gbp")
+    month_year_iter_download(m, y, c,path)
+    unzip_files('data')
+    delete_zip_files('data')

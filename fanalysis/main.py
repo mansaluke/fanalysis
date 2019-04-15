@@ -1,39 +1,46 @@
 import os
 import json
 from pprint import pprint
+from misc import run_from_ipython
 
 
 def df_to_json(df):
-    import pandas as pd
-    import json
-    import random as rd
-    from datetime import datetime
-    print(df[:10])
-    f = os.path.isfile('x.json')
-    if f==True:
-        r = input('your existing json file will be replaced. proceed?(y/n) ')
-        a = True
-        while a:
-            if r == 'y':
-                os.remove('x.json')
-                a = False
-            elif r == 'n':
-                a= False
-                print('process terminated')
-                os._exit(1)
-            else:
-                a = True
-    df.to_json('x.json', orient='table', date_unit='s')
-    f=open('x.json', 'r')
-    print(f.read())
+    try:
+        import pandas as pd
+        import json
+        import random as rd
+        from datetime import datetime
+        print(df[:10])
+        f = os.path.isfile('x.json')
+        if f==True:
+            r = input('your existing json file will be replaced. proceed?(y/n) ')
+            a = True
+            while a:
+                if r == 'y':
+                    os.remove('x.json')
+                    df.to_json('x.json', orient='table', date_unit='s')
+                    f=open('x.json', 'r')
+                    print("json created successfully")
+                    a = False
+                elif r == 'n':
+                    a= False
+                    print('process terminated')
+                    #os._exit(1)
+                else:
+                    a = True
+    except:
+        print("no json created - process failed")
 
 def json_load(jfile):
-    import pandas as pd
-    with open(jfile, 'r') as f:
-        df = json.load(f)
-    df = df['data']
-    df = pd.DataFrame(df)
-    return df
+    try:
+        import pandas as pd
+        with open(jfile, 'r') as f:
+            df = json.load(f)
+        df = df['data']
+        df = pd.DataFrame(df)
+        return df
+    except:
+        print("could not load json")
 
 
 files = os.listdir('.')
@@ -61,7 +68,7 @@ def user_input():
                 df = generatedata.df
                 df_to_json(df)
                 print(df)
-                return df
+                #return df
             except:
                 print('something went wrong')
                 pass
@@ -73,8 +80,8 @@ def user_input():
             break
         else:    
             print('Response not recognised')
-            #l = False
-            #continue
+        return df
+
 
 if __name__== '__main__':
     df = user_input()   

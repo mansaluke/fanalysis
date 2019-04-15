@@ -8,20 +8,26 @@ Created on Sun Mar 31 16:23:50 2019
 
 x = 1
 
-import main as e
+import main as m
 if x == 1:
-    #import main
-    df = e.user_input()
-    #df = main.json_load('x.json')
+    df = m.user_input()
+    import pandas as pd
+    df = pd.DataFrame(df)
+    #df = m.json_load('x.json')
+    print("done")
+
 elif x == 2:
     
     df = e.use_csvs()
 
 import structure as s
-df = s.date_split(df)
+#df = s.date_split(df)
+print("done")
+df['year'] = pd.DatetimeIndex(df['date']).year
 print(df)
-df = s.add_rand(df)
-df = s.lag_var(df, 'rnd', -1)
+#df = s.add_rand(df)
+#df = s.lag_var(df, 'rnd', -1)
+
 
 #df['ts'] = df['aggdays'] *0.2 + + df['rnd']
 #
@@ -32,6 +38,6 @@ df = s.lag_var(df, 'rnd', -1)
 #
 #import matplotlib.pyplot as plt
 
-plt.plot(df['date'], df['day'])
+#plt.plot(df['date'], df['day'])
 
 

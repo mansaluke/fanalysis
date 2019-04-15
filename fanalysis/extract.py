@@ -7,11 +7,26 @@ import matplotlib.pyplot as plt
 from calendar import monthrange
 import sys
 import time
+from misc import run_from_ipython
+
+def mkdir_p(path):
+    import errno
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
 
 def create_path(path):
+    if run_from_ipython() is False:
+        path = "fanalysis\\" + path
     if not os.path.exists(path):
         print('data directory not found. Please create the data folder amd try again')
-        #os._exit(1)
+        if run_from_ipython is False:
+            os._exit(1)
     return path
 
 
@@ -27,12 +42,17 @@ def str_listconcat (input, str):
 #join(x.tolist())
 
 
+#def mk_file(file):
+#    try:
+#       open(file, 'x')
+#    except FileExistsError:
+#       pass
 
 def use_csvs():
     path = create_path('data')
     #collect files from data folder
     files = os.listdir(path) #use os.getcwd() if files in same path. otherwise set path
-    files = str_listconcat(files, "data/")
+    files = str_listconcat(files, path + "/")
     
     #read and combine data
     header= ['date', 'd1', 'd2', 'd3', 'd4', 'v']
@@ -64,18 +84,24 @@ def use_csvs():
 
 
 def graph_vars(df, header):
-    plt.rcParams['figure.figsize'] = (15, 5)
-    #plt.figure(); df.plot();plt.legend(loc='best')
-    for h in header:
-        plt.plot(df['date'], df[h])
-        #plt.plot(df['date'], df[colnames(h)])        
-        plt.title([h])
-        #plt.ylabel('Price (£)')
-        plt.pause(0.01)
-        plt.show(block=False)
-        time.sleep(0.5)
-        plt.close
-        #plt.gcf()
+    if run_from_ipython() is False:
+        plt.rcParams['figure.figsize'] = (15, 5)
+        #plt.figure(); df.plot();plt.legend(loc='best')
+        for h in header:
+            plt.plot(df['date'], df[h])
+            #plt.plot(df['date'], df[colnames(h)])        
+            plt.title([h])
+            #plt.ylabel('Price (£)')
+            plt.pause(0.01)
+            plt.show(block=False)
+            time.sleep(0.5)
+            plt.close
+            #plt.gcf()
+    elif run_from_ipython() is True:
+        for h in header:
+            plt.plot(df['date'], df[h]) 
+            plt.title([h])
+            plt.show
 
 
 if __name__ == '__main__':
