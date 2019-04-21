@@ -9,7 +9,7 @@ Created on Sun Apr  7 14:37:11 2019
 # descriptive analysis
 # 
 # =============================================================================
-x = 2
+x = 1
 
 import extract as e
 import structure as s

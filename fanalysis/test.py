@@ -40,7 +40,7 @@ print(df[['date', 'ts']])
 print(df.columns)
 
 
-plotting.graph_vars(df, ['rnd', 'ts'])
+plotting.graph_vars(df, ['aggdays'], 5)
 #import matplotlib.pyplot as plt
 #count_row = df.shape[0] 
 #plt.plot(df['date'], df['ts'])
