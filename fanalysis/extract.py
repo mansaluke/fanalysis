@@ -1,13 +1,14 @@
-########download historical data first (get_fx_m1)
+"""
+download historical data first (get_fx_m1)
+"""
 
 from datetime import datetime
 import os
 import pandas  as pd
-import matplotlib.pyplot as plt
 from calendar import monthrange
 import sys
-import time
 from misc import run_from_ipython
+
 
 def mkdir_p(path):
     import errno
@@ -62,6 +63,7 @@ def use_csvs():
               'd4': 'float32', 
               'v': 'float32'}
     
+    #could use numpy.memmap for partial read
     files_csv = [pd.read_csv(f, sep = ";", header = None, names=header, parse_dates = ['date'], 
         dtype = dtypes, infer_datetime_format=True) 
         for f in files if f[-3:] == 'csv']
@@ -82,31 +84,10 @@ def use_csvs():
     return df
 
 
-
-def graph_vars(df, header):
-    if run_from_ipython() is False:
-        plt.rcParams['figure.figsize'] = (15, 5)
-        #plt.figure(); df.plot();plt.legend(loc='best')
-        for h in header:
-            plt.plot(df['date'], df[h])
-            #plt.plot(df['date'], df[colnames(h)])        
-            plt.title([h])
-            #plt.ylabel('Price (£)')
-            plt.pause(0.01)
-            plt.show(block=False)
-            time.sleep(0.5)
-            plt.close
-            #plt.gcf()
-    elif run_from_ipython() is True:
-        for h in header:
-            plt.plot(df['date'], df[h]) 
-            plt.title([h])
-            plt.show
-
-
 if __name__ == '__main__':
     df = use_csvs()
     import structure as s
+    import plotting as p
     #df = s.add_rand(df)
     #df = s.datesplit(df)
     #df = s.lag_var(df, 'd1', -1)
@@ -114,7 +95,7 @@ if __name__ == '__main__':
     print(df.columns)
     header = ['d1','d2', 'd3', 'd4']
     #header[1:-1]
-    graph_vars(df, header)
+    p.graph_vars(df, header)
 
 
 

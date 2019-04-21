@@ -61,14 +61,13 @@ def user_input():
             print(df[:10])
             l = False
             return df
-            break
         elif c=='c': 
             import generatedata
             try:
-                df = generatedata.df
+                df = generatedata.df_user()
                 df_to_json(df)
                 print(df)
-                #return df
+                return df
             except:
                 print('something went wrong')
                 pass
@@ -80,7 +79,7 @@ def user_input():
             break
         else:    
             print('Response not recognised')
-        return df
+        #return df
 
 
 if __name__== '__main__':

@@ -1,4 +1,4 @@
-import numpy as numpy
+import numpy as np
 import pandas as pd 
 from datetime import datetime
 import random as rd
@@ -22,8 +22,10 @@ class data:
                 rnd=[]
                 for i in range(self.p):
                     rnd.append(rd.random())
-                d = pd.DataFrame( rnd, times, columns=['rnd'])
-                d.index.name = 'date'
+                #d = pd.DataFrame( rnd, times, columns=['rnd'])
+                #d = pd.DataFrame( {'date': times, 'rnd':rnd}, columns=['date', 'rnd'])
+                np.column_stack([t, rnd])
+                d = pd.DataFrame(np.column_stack([t, rnd]), columns=['date', 'rnd'])
                 print("data created")
             return d
     except ValueError as err1:
@@ -31,32 +33,37 @@ class data:
         d = "end"
 
     
+def df_user():
+    print('you will need to choose the frequency and number of periods of the data. e.g. 10 days')
+    uf = True
 
-print('you will need to choose the frequency and number of periods of the data. e.g. 10 days')
-uf = True
-
-while uf:
-    f = input('please choose a frequency or press t to terminate (enter d for day or m for month) ')
-    if f == 'd' or f =='m' or f=='t':
-        if f != 't':
-            if f=='d':
-                freq='days'
-            elif f=='m':
-                freq='months'
-            p = input('How many {} would you like to generate? '.format(freq))
-            try:
-                p = int(p)
-                d = data(p, f)
-                df = d.genseries()
-                print(df.head())
-                if not isinstance(df, str):
-                    uf = False
+    while uf:
+        f = input('please choose a frequency or press t to terminate (enter d for day or m for month) ')
+        if f == 'd' or f =='m' or f=='t':
+            if f != 't':
+                if f=='d':
+                    freq='days'
+                elif f=='m':
+                    freq='months'
+                p = input('How many {} would you like to generate? '.format(freq))
+                try:
+                    p = int(p)
+                    d = data(p, f)
+                    df = d.genseries()
+                    print(df.head())
+                    if not isinstance(df, str):
+                        uf = False
+                    return df
+                except ValueError:
+                    print('Non-numeric data inputted. Please try again.')
+            elif f =='t':
+                uf = False
                 break
-            except ValueError:
-                print('Non-numeric data inputted. Please try again.')
-        elif f =='t':
-            uf = False
-            break
-    else:
-        print('response not recognised. Please try again.')
+        else:
+            print('response not recognised. Please try again.')
 
+
+
+
+if __name__ == '__main__':
+    df_user()
