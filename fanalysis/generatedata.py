@@ -3,6 +3,18 @@ import pandas as pd
 from datetime import datetime
 import random as rd
 
+def gen_uniform(low=-0.2,high=0.2):
+    """
+    Generates 50 randomly generated points between 0 and 1. low and high values alter the variance
+    """
+    import matplotlib.pyplot as plt
+    x = np.linspace(0, 1)  
+    y = x + np.random.uniform(low,high,x.shape)
+    plt.scatter(x, y)
+    plt.show()
+    return x, y
+
+
 class data:
     '''create data'''
     def __init__(self, p, f):
@@ -66,4 +78,4 @@ def df_user():
 
 
 if __name__ == '__main__':
-    df_user()
+    gen_uniform()
