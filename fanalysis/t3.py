@@ -1,21 +1,32 @@
-import re
-
-def input_to_string():
+def input_to_string(str):
+	"""
+	removes "input"/"string" elements from string and replaces .format part with 
+	corresponding variables
+	"""
+	if "print" in str or "input" in str:
+		if "print" in str:
+			str_replace = "print('"
+		if "input" in str:
+			str_replace = "input('"	
+	else:
+		raise ValueError('Can only enter strings containing "print" or "input"')
+	
 	def replace_all(text, dic):
 		for i, j in dic.items():
 			text = text.replace(i, j)
 		return text
 
-	#add space for string split
-	if "input('" in str:
-		if "input(' " in str:
+	#add space for correct string split
+	if str_replace in str:
+		if str_replace + ' ' in str:
+			print(str_replace + ' ')
 			pass
 		else:
-			str.replace("input('", "input(' ")
+			str = str.replace(str_replace, str_replace + ' ')
 
-	print(str)
+	#print(str)
 	x = str.split()
-	print(x)
+	#print(x)
 
 	def match_text(text, firstoccuranceonly = False):
 		match = (a for a, r in enumerate(x) if text in r)
@@ -26,8 +37,8 @@ def input_to_string():
 		else: 
 			return(next(match))
 
-	match_input = match_text("input", True)
-	match_sym = match_text("{}")
+
+	match_input = match_text(str_replace.replace("('", ""), True)
 	match_format = match_text(".format", True)
 
 	y=[]
@@ -39,10 +50,8 @@ def input_to_string():
 
 	vars = x[match_format:]
 	vars= ''.join(vars)
-
 	vars=replace_all(vars, {"'.format(":"",")":""})
 	vars=list(vars.split(","))
-
 	vars = ["'+{}+'".format(v) for v in vars]
 
 	c=0
@@ -50,18 +59,18 @@ def input_to_string():
 		if i == '{}':
 			y[n] = vars[c]
 			c+=1
-			print(y)
 	y=' '.join(y)
 	str="'"+y+"'"
-	print(str)
 	return str
 
 
-a='5'
-freq="freq"
-str =  "p = input('How many {} would you like to {} generate? '.format(freq, a))"
 
 if __name__=='__main__':
-	ps = 'p = input('+str+')'
-	print(ps)
-	exec(ps)
+	a='(random stuff hahaha) '
+	freq="days"
+	str =  "p = print('How many {} would you like to {} generate? '.format(freq, a))"
+	str = input_to_string(str)
+	ps = 'input('+str+')'
+	#exec(ps)
+	x = eval(ps)
+	print(x)
