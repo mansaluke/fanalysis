@@ -18,7 +18,7 @@ def df_to_json(df):
             while a:
                 if r == 'y':
                     os.remove('x.json')
-                    df.to_json('x.json', orient='table', date_unit='s')
+                    df.to_json('x.json', orient='records', date_unit='s')
                     f=open('x.json', 'r')
                     print("json created successfully")
                     a = False
@@ -31,13 +31,14 @@ def df_to_json(df):
     except:
         print("no json created - process failed")
 
-def json_load(jfile):
+def json_load(jfile='x.json'):
     try:
         import pandas as pd
-        with open(jfile, 'r') as f:
-            df = json.load(f)
-        df = df['data']
-        df = pd.DataFrame(df)
+        #with open(jfile, 'r') as f:
+            #df = json.load(f)
+        #df = df['data']
+        #df = pd.DataFrame(df)
+        df = pd.read_json(jfile, orient='records', convert_dates=['date'])
         return df
     except:
         print("could not load json")
@@ -85,5 +86,3 @@ def user_input():
 if __name__== '__main__':
     df = user_input()   
     #df = json_load('x.json')
-
-

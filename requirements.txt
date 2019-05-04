@@ -6,3 +6,5 @@ requests
 bs4
 pyarrow
 scikit-learn
+pydot >=1.4.1
+graphviz >=0.10.1

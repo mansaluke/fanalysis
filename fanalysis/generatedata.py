@@ -78,4 +78,4 @@ def df_user():
 
 
 if __name__ == '__main__':
-    gen_uniform()
+    df_user()

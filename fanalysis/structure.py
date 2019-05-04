@@ -57,8 +57,8 @@ if __name__ == '__main__':
         import main
         df=main.json_load('x.json')
     elif x ==1:
-        import extract
-        df = use_csvs()
+        import extract as e
+        df = e.use_csvs()
         
     df = add_rand(df)
     df = date_split(df)

@@ -22,12 +22,12 @@ from datetime import datetime
 if x == 1:
     import main
     df = main.json_load('x.json')
+    print(df.head())
 elif x == 2: 
     df = e.use_csvs()
 
 df = s.date_split(df)
-#df = s.add_rand(df)
-
+df = s.add_rand(df)
 #plt.plot(df['date'], df['d1'])
 
 
@@ -38,13 +38,23 @@ features = pd.get_dummies(df)
 print(features.head(5))
 #print(features.iloc[:,10006:].head(5))
 print(features.iloc[:,0:5].head(5))
-features = features.drop('date', axis = 1)
-features = features.drop('d2', axis = 1)
-features = features.drop('d3', axis = 1)
-features = features.drop('d4', axis = 1)
 
-labels = np.array(features['d1'])
-features = features.drop('d1', axis = 1)
+def drop_col(df, col_names):
+    for col in col_names:
+        if col in df.columns:
+            df = df.drop(col, axis = 1)
+    return df
+
+features = drop_col(features, ['date', 'd2', 'd3', 'd4'])
+
+
+if 'd1' in features:
+    labels = np.array(features['d1'])
+    features = features.drop('d1', axis = 1)
+elif 'rnd' in features:
+    labels = np.array(features['rnd'])
+    features = features.drop('rnd', axis = 1)
+
 feature_list = list(features.columns)
 print(feature_list)
 features = np.array(features)
@@ -78,16 +88,17 @@ print('accuracy:', round(accuracy, 2), '%.')
 ###################################################
 #install pydot
 ##################################################
-#from sklearn.tree import export_graphviz 
+from sklearn.tree import export_graphviz 
 #from sklearn.tree import pydot
+#import pydot
+import pydotplus
+#from sklearn import pydot
 
-#tree= rf.estimators_[5]
-
-#export_graphviz(tree, out_file = 'tree.dot', feature_names=feature_list, rounded = True, precision=1)
-#pydot.graph_from_dot_file('tree.dot')
-#graph.write_png('tree.png')
-
-
+tree= rf.estimators_[5]
+export_graphviz(tree, out_file = 'tree.dot', feature_names=feature_list, rounded = True, precision=1)
+graph = pydotplus.graph_from_dot_file('tree.dot')
+graph.write_png('tree.png')
+#Image(graph.create_png())
 
 
 importances = list(rf.feature_importances_)
@@ -103,7 +114,6 @@ rf.fit(train_important, train_labels)
 predictions= rf.predict(test_important)
 errors = abs(predictions-test_labels)
 print(errors)
-
 
 import matplotlib.pyplot as plt
 #%matplotlib inline

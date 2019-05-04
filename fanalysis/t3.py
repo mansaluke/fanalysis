@@ -24,10 +24,9 @@ def input_to_string(str):
 		else:
 			str = str.replace(str_replace, str_replace + ' ')
 
-	#print(str)
 	x = str.split()
-	#print(x)
-
+	
+	
 	def match_text(text, firstoccuranceonly = False):
 		match = (a for a, r in enumerate(x) if text in r)
 		if firstoccuranceonly ==False:
@@ -45,8 +44,8 @@ def input_to_string(str):
 	for i in x[match_input+1:match_format]:
   	  y.append(i)
 
-	if i == x[match_format]:
-		new_word = i.replace(".format", "")
+	#if i == x[match_format]:
+	#	new_word = i.replace(".format", "")
 
 	vars = x[match_format:]
 	vars= ''.join(vars)
@@ -68,6 +67,7 @@ def input_to_string(str):
 if __name__=='__main__':
 	a='(random stuff hahaha) '
 	freq="days"
+	print('How many {} would you like to {} generate? '.format(freq, a))
 	str =  "p = print('How many {} would you like to {} generate? '.format(freq, a))"
 	str = input_to_string(str)
 	ps = 'input('+str+')'
