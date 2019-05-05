@@ -13,10 +13,13 @@ from misc import run_from_ipython
 def mkdir_p(path):
     import errno
     try:
+        path = "fanalysis\\" + path
         os.makedirs(path)
+        return path
     except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
+            return path
+            #pass
         else:
             raise
 

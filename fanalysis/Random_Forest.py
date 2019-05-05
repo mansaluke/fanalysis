@@ -18,10 +18,10 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from datetime import datetime
-
+import dfconvert as d
 if x == 1:
     import main
-    df = main.json_load('x.json')
+    df = d.storage_to_df('x.json').file
     print(df.head())
 elif x == 2: 
     df = e.use_csvs()
@@ -73,7 +73,7 @@ print('av basline error: ', round(np.mean(baseline_errors), 2))
 
 from sklearn.ensemble import RandomForestRegressor
 
-rf = RandomForestRegressor(n_estimators=10, random_state=42, max_depth=10, n_jobs=-1)
+rf = RandomForestRegressor(n_estimators=5, random_state=42, max_depth=4, n_jobs=-1)
 rf.fit(train_features, train_labels)
 predictions = rf.predict(test_features)
 errors = abs(predictions - test_labels)
@@ -94,7 +94,7 @@ from sklearn.tree import export_graphviz
 import pydotplus
 #from sklearn import pydot
 
-tree= rf.estimators_[5]
+tree= rf.estimators_[3]
 export_graphviz(tree, out_file = 'tree.dot', feature_names=feature_list, rounded = True, precision=1)
 graph = pydotplus.graph_from_dot_file('tree.dot')
 graph.write_png('tree.png')

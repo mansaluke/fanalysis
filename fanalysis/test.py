@@ -6,7 +6,7 @@ Created on Sun Mar 31 16:23:50 2019
 """
 
 
-x = 1
+x = 2
 
 import pandas as pd
 import main as m
@@ -37,7 +37,8 @@ df = s.add_rand(df)
 print(df.head())
 print(df[['date', 'ts']])
 print(df.columns)
+d.df_to_storage(df, 'x.json')
 
-#plotting.graph_vars(df, ['d1', 'd2', 'd3'])
-plotting.graph_vars(df, df.columns)
+plotting.graph_vars(df, ['d1', 'd2', 'd3'])
+#plotting.graph_vars(df, df.columns)
 

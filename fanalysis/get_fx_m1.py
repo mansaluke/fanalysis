@@ -150,10 +150,11 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
      
 if __name__ == '__main__':
     print("choose the starting period and currency e.g. 2018 5 eurgbp")
-    path = mkdir_p('data')
+    mkdir_p('data')
+    path = 'data'
     y = int(input("enter start year e.g.2017:"))
     m = int(input("enter start month as an integer i.e for january enter 1:"))
     c = input("enter currency code e.g. eurgbp for euro to gbp")
+    delete_zip_files('data')
     month_year_iter_download(m, y, c,path)
     unzip_files('data')
-    delete_zip_files('data')

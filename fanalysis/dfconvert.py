@@ -38,7 +38,7 @@ class storage_to_df:
             df = pd.read_json(jfile, orient='records', convert_dates=['date'])
             return df
         except:
-            print("could not load json")
+            print("could not load json - file may be too large.")
     
     def parquet_load(self, pfile='x.parque'):
         table2 = pq.read_table(pfile)
@@ -103,4 +103,4 @@ class df_to_storage:
 if __name__=='__main__':
     df = storage_to_df('x.json').file
     #df_to_storage(df, 'x.json')
-    df_to_storage(df, 'x.parquet')
+    #df_to_storage(df, 'x.parquet')
