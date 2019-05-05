@@ -50,6 +50,14 @@ def str_listconcat (input, str):
 #       pass
 
 def use_csvs():
+    """
+    loads the csv files generates by the get_fx_m1/api module
+    colnames = {'d1':'Bar OPEN Bid Quote', 
+            'd2':'Bar HIGH Bid Quote', 
+            'd3':'Bar LOW Bid Quote', 
+            'd4' : 'Bar CLOSE Bid Quote', 
+            'v': 'Volume'}
+    """
     path = create_path('data')
     #collect files from data folder
     files = os.listdir(path) #use os.getcwd() if files in same path. otherwise set path
@@ -70,11 +78,7 @@ def use_csvs():
             
     df = pd.concat(files_csv, ignore_index=True)
     
-    colnames = {'d1':'Bar OPEN Bid Quote', 
-                'd2':'Bar HIGH Bid Quote', 
-                'd3':'Bar LOW Bid Quote', 
-                'd4' : 'Bar CLOSE Bid Quote', 
-                'v': 'Volume'}
+
     
     #set date
     #from datetime import datetime
@@ -91,11 +95,16 @@ if __name__ == '__main__':
     #df = s.add_rand(df)
     #df = s.datesplit(df)
     #df = s.lag_var(df, 'd1', -1)
-
     print(df.columns)
-    header = ['d1','d2', 'd3', 'd4']
-    #header[1:-1]
-    p.graph_vars(df, header)
+    colnames = {'d1':'Bar OPEN Bid Quote', 
+            'd2':'Bar HIGH Bid Quote', 
+            'd3':'Bar LOW Bid Quote', 
+            'd4' : 'Bar CLOSE Bid Quote', 
+            'v': 'Volume'}
+    headers = [ k for k in colnames]
+    #headers = ['d1','d2', 'd3', 'd4']
+    #headers[1:-1]
+    p.graph_vars(df, headers)
 
 
 

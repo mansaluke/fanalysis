@@ -2,15 +2,11 @@ import os
 import json
 from pprint import pprint
 from misc import run_from_ipython
-
+import pandas as pd
 
 def df_to_json(df):
-    try:
-        import pandas as pd
+    try:       
         import json
-        import random as rd
-        from datetime import datetime
-        print(df[:10])
         f = os.path.isfile('x.json')
         if f==True:
             r = input('your existing json file will be replaced. proceed?(y/n) ')
@@ -25,20 +21,23 @@ def df_to_json(df):
                 elif r == 'n':
                     a= False
                     print('process terminated')
-                    #os._exit(1)
+                    if run_from_ipython == False:
+                        os._exit(1)
+                    else:
+                        break
                 else:
                     a = True
+        elif f==False:
+            df.to_json('x.json', orient='records', date_unit='s')
+            f=open('x.json', 'r')
+            print("json created successfully")
     except:
         print("no json created - process failed")
 
 def json_load(jfile='x.json'):
     try:
-        import pandas as pd
-        #with open(jfile, 'r') as f:
-            #df = json.load(f)
-        #df = df['data']
-        #df = pd.DataFrame(df)
         df = pd.read_json(jfile, orient='records', convert_dates=['date'])
+        print("json loaded successfully")
         return df
     except:
         print("could not load json")
@@ -67,7 +66,7 @@ def user_input():
             try:
                 df = generatedata.df_user()
                 df_to_json(df)
-                print(df)
+                print(df.head())
                 return df
             except:
                 print('something went wrong')
@@ -80,7 +79,6 @@ def user_input():
             break
         else:    
             print('Response not recognised')
-        #return df
 
 
 if __name__== '__main__':
