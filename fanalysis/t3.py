@@ -36,41 +36,74 @@ def input_to_string(str):
 		else: 
 			return(next(match))
 
-
 	match_input = match_text(str_replace.replace("('", ""), True)
-	match_format = match_text(".format", True)
 
-	y=[]
-	for i in x[match_input+1:match_format]:
-  	  y.append(i)
+	if ".format" in str:
+		match_format = match_text(".format", True)
 
-	#if i == x[match_format]:
-	#	new_word = i.replace(".format", "")
+		y=[]
+		for i in x[match_input+1:match_format]:
+  		  y.append(i)
 
-	vars = x[match_format:]
-	vars= ''.join(vars)
-	vars=replace_all(vars, {"'.format(":"",")":""})
-	vars=list(vars.split(","))
-	vars = ["'+{}+'".format(v) for v in vars]
+		#if i == x[match_format]:
+		#	new_word = i.replace(".format", "")
 
-	c=0
-	for n, i in enumerate(y):
-		if i == '{}':
-			y[n] = vars[c]
-			c+=1
-	y=' '.join(y)
-	str="'"+y+"'"
-	return str
+		vars = x[match_format:]
+		vars= ''.join(vars)
+		vars=replace_all(vars, {"'.format(":"",")":""})
+		vars=list(vars.split(","))
+		vars = ["'+{}+'".format(v) for v in vars]
+
+		c=0
+		for n, i in enumerate(y):
+			if i == '{}':
+				y[n] = vars[c]
+				c+=1
+		y=' '.join(y)
+		str="'"+y+"'"
+		return str
+
+	else:
+		y=[]
+		for i in x[match_input+1:]:
+  		  y.append(i)			
+		return str
 
 
+
+
+
+def getsourcelines(object):
+	"""from inspect module
+	Return a list of source lines and starting line number for an object.	
+	The argument may be a module, class, method, function, traceback, frame,
+	or code object.  The source code is returned as a list of the lines
+	corresponding to the object and the line number indicates where in the
+	original source file the first line of code was found.  An OSError is
+	raised if the source code cannot be retrieved."""
+	import inspect as i
+	object = i.unwrap(object)
+	lines, lnum = i.findsource(object)	
+	if i.ismodule(object):
+	    return lines, 0
+	else:
+		#return False
+	    return i.getblock(lines[lnum:]), lnum + 1
 
 if __name__=='__main__':
-	a='(random stuff hahaha) '
-	freq="days"
-	print('How many {} would you like to {} generate? '.format(freq, a))
-	str =  "p = print('How many {} would you like to {} generate? '.format(freq, a))"
-	str = input_to_string(str)
-	ps = 'input('+str+')'
-	#exec(ps)
-	x = eval(ps)
-	print(x)
+	#a='(random stuff hahaha) '
+	#freq="days"
+	#print('How many {} would you like to {} generate? '.format(freq, a))
+	#str =  "p = print('How many {} would you like to {} generate? '.format(freq, a))"
+	#str = input_to_string(str)
+	#ps = 'input('+str+')'
+	##exec(ps)
+	#x = eval(ps)
+	#print(x)
+	import inspect as i
+	import t2
+	x=1
+	print(getsourcelines(t2.func_adj.do))
+	
+	#getclasstree
+	

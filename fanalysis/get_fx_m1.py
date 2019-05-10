@@ -100,7 +100,7 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
 #    ym_end= 12*end_year + end_month - 1
     #y, m = divmod( ym, 12 )
     
-    delete_old_data('data') #
+    delete_old_data('fanalysis\data') #
     
     if start_year!=end_year:   
         if start_month == 1:
@@ -155,6 +155,6 @@ if __name__ == '__main__':
     y = int(input("enter start year e.g.2017:"))
     m = int(input("enter start month as an integer i.e for january enter 1:"))
     c = input("enter currency code e.g. eurgbp for euro to gbp")
-    delete_zip_files('data')
+    delete_zip_files('fanalysis\data')
     month_year_iter_download(m, y, c,path)
-    unzip_files('data')
+    unzip_files('fanalysis\data')

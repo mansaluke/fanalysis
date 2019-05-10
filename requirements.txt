@@ -1,10 +1,10 @@
-python >= 3.7
 matplotlib >= 3.0.2
 numpy >=1.16.0
 pandas >= 0.24.0
-requests
-bs4
-pyarrow
-scikit-learn
 pydot >=1.4.1
 graphviz >=0.10.1
+numba >= 1.16.3
+requests
+bs4
+scikit-learn
+pyarrow

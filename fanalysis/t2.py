@@ -1,9 +1,9 @@
 import inspect
 import generatedata
+import t3
 
 
-
-class func_adj:
+class func_adj():
     """functions in same module cannot use inspect
     """
     def __init__(self, name):
@@ -19,30 +19,14 @@ class func_adj:
                 source = inspect.getsource(self)
                 all_lines = source.splitlines()
                 for line in range(len(all_lines)):
-                    if "print(" in all_lines[line]:
+                    if "print(" in all_lines[line] or "input(" in all_lines[line]:
                         
-                        new_line = all_lines[line].replace("print", "a = ")
-                        print(new_line)
-                        all_lines[line] = new_line
-
-                    if "input(" in all_lines[line]:
-                        """
-                        e.g.p = input('How many {} would you like to generate? '.format(freq))
-                        """
-                        
-                        print(all_lines[line])
-                        print(all_lines[line].find("input("))
-
-                        
-                        print(len(all_lines[line].rstrip()))
-
-                        new_line = all_lines[line].replace("input(", "a = ")
-                        print(new_line)
-                        all_lines[line] = new_line
-
-                #print('\n'.join(map(str, all_lines)))  
+                        print(t3.input_to_string(all_lines[line]))
+                        all_lines[line] = t3.input_to_string(all_lines[line])                
+                print('\n'.join(map(str, all_lines)))  
                 return all_lines
             all_lines = p(self)
+
             return all_lines
 
         else:
@@ -50,7 +34,7 @@ class func_adj:
             pass        
     
 
-
-function = generatedata.df_user
-l = func_adj.do(function)
+if __name__ == "__main__":
+    function = generatedata.df_user
+    l = func_adj.do(function)
 
