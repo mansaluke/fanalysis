@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
-import generatedata
+import sys
+sys.path.insert(0, '../fanalysis/generatedata')
+
 
 form_fields = 'field 1', 'field 2'
 

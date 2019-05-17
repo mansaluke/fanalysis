@@ -11,7 +11,7 @@ class app_main:
     
     def __init__(self, master):
         self.master = master
-        master.title("test app")
+        master.title("Print Gui Tool")
 
         self.button = Button(master, text="createdata", command=self.createdata)
         self.button.pack()
