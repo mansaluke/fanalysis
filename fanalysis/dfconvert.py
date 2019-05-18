@@ -2,6 +2,7 @@
 consists of class df_store which allows the user to 
 easily store and load their panda dataframes. current storage formats include: json, csv 
 and parquet
+--try: df_store('test.json').create_df() and df_store('test.json').store_df(df)
 --to be incorporated: feather, mongodb, csv, pickle
 """
 import pandas as pd

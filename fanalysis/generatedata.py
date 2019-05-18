@@ -78,4 +78,6 @@ def df_user():
 
 
 if __name__ == '__main__':
-    df_user()
+    df = data(1000, "d").genseries()
+    import plotting as p
+    p.graph_vars(df, ['rnd'])

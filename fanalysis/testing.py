@@ -32,13 +32,14 @@ y.plot()
 
 
 import quandl
-
+import dfconvert
+quandl.ApiConfig.api_key = "wDWwy32n6Sm4jg96yHPK"
 
 start = "2016-01-01"
 end = "2016-12-31"
 
 df = quandl.get("WIKI/AMZN", start_date = start, end_date = end)
-
+#dfconvert.df_store("quanddata").store_df(df)
 print(df.head())  # taking a look at the first 5 rows
 
 

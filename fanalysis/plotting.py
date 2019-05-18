@@ -1,18 +1,24 @@
 from misc import Ipython
 import time
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('tkAgg')
 import matplotlib.pyplot as plt
 
 def graph_vars(df, header, p = 0.01):
     """
     Produces graphs looping through time series a.k.a headers
-    """
+    insert headers as list
+    """ 
     from pandas.plotting import register_matplotlib_converters
     register_matplotlib_converters()
-    if run_from_ipython() is False:
+    try:
+        list(header)
+    except:
+        raise ValueError("header should be a list")
+    if Ipython.run_from_ipython() is False:
         plt.rcParams['figure.figsize'] = (15, 5)
         #plt.figure(); df.plot();plt.legend(loc='best')
+        
         for h in header:
             plt.plot(df['date'], df[h])
             plt.title([h])

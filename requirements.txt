@@ -3,9 +3,9 @@ numpy >=1.16.0
 pandas >= 0.24.0
 pydot >=1.4.1
 graphviz >=0.10.1
-numba >= 1.16.3
+numba >= 0.16.0
+quandl
 requests
 bs4
 scikit-learn
 pyarrow
-quandl
