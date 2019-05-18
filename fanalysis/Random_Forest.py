@@ -18,10 +18,10 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from datetime import datetime
-import dfconvert as d
+import dfConvert as dfC
 if x == 1:
     import main
-    df = d.storage_to_df('x.json').file
+    df = dfC.storage_to_df('x.json').file
     print(df.head())
 elif x == 2: 
     df = e.use_csvs()

@@ -1,7 +1,7 @@
-from misc import run_from_ipython
+from misc import Ipython
 import time
 import matplotlib
-matplotlib.use('tkAgg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 def graph_vars(df, header, p = 0.01):

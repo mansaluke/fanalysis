@@ -7,13 +7,13 @@ import os
 import pandas  as pd
 from calendar import monthrange
 import sys
-from misc import run_from_ipython
+from misc import Ipython
 
 
 def mkdir_p(path):
     import errno
     try:
-        path = "fanalysis\\" + path
+        path = path
         os.makedirs(path)
         return path
     except OSError as exc:
@@ -24,12 +24,11 @@ def mkdir_p(path):
 
 
 def create_path(path):
-    if run_from_ipython() is False:
-        path = "fanalysis\\" + path
     if not os.path.exists(path):
-        print('data directory not found. Please create the data folder amd try again')
-        if run_from_ipython is False:
-            os._exit(1)
+        path = mkdir_p(path)
+        raise FileNotFoundError("directory containing files was not found. path has been created load cvs") 
+    else:
+        pass
     return path
 
 
@@ -60,7 +59,7 @@ def use_csvs():
             'd4' : 'Bar CLOSE Bid Quote', 
             'v': 'Volume'}
     """
-    path = create_path('data')
+    path = create_path('fanalysis/data')
     #collect files from data folder
     files = os.listdir(path) #use os.getcwd() if files in same path. otherwise set path
     files = str_listconcat(files, path + "/")
@@ -76,7 +75,7 @@ def use_csvs():
     #could use numpy.memmap for partial read
     files_csv = [pd.read_csv(f, sep = ";", header = None, names=header, parse_dates = ['date'], 
         dtype = dtypes, infer_datetime_format=True) 
-        for f in files if f[-3:] == 'csv']
+        for f in files if f[-3:] == 'csv' and f[:24] == 'fanalysis/data/DAT_ASCII']
             
     df = pd.concat(files_csv, ignore_index=True)
     
@@ -91,9 +90,9 @@ def use_csvs():
 
 
 if __name__ == '__main__':
-    df = use_csvs()
-    import structure as s
+    df = use_csvs()  
     import plotting as p
+    #import structure as s
     #df = s.add_rand(df)
     #df = s.datesplit(df)
     #df = s.lag_var(df, 'd1', -1)
@@ -103,10 +102,11 @@ if __name__ == '__main__':
             'd3':'Bar LOW Bid Quote', 
             'd4' : 'Bar CLOSE Bid Quote', 
             'v': 'Volume'}
-    headers = [ k for k in colnames]
+    headers = [ k for k in colnames][:-1]
     #headers = ['d1','d2', 'd3', 'd4']
-    #headers[1:-1]
-    p.graph_vars(df, headers)
-
+    #p.graph_vars(df, headers)
+    
+    import dfConvert as dfC
+    dfC.df_store("c").store_df(df)
 
 
