@@ -20,29 +20,37 @@ def add_rand(df):
 
 def date_split(df):
     """
-    Extracts date elements from pandas DataFrame
+    Extracts date elements from pandas DataFrame:
+    --year, month, week, day, hour, daysinmonth, aggdays
     """
     try:
         df['year'] = pd.DatetimeIndex(df['date']).year
         df['month'] = pd.DatetimeIndex(df['date']).month
-        df['week'] = pd.DatetimeIndex(df['date']).week
         df['day'] = pd.DatetimeIndex(df['date']).day
-        df['hour'] = pd.DatetimeIndex(df['date']).hour
-        #df['daysinmonth'] = df.apply(lambda row: monthrange(row['year'], row['month']), axis=1).str[1]
-        df['not_dupym'] = 1 - df[['month', 'year']].duplicated()
-        df = df.merge(
-        df[df['not_dupym']==1].groupby(['year', 'month'], as_index=False)['year', 'month'].sum().apply(lambda row: monthrange(row['year'].astype('int'), row['month'].astype('int')), axis=1).str[1].reset_index().rename(columns={0:"daysinmonth"})
-, on = ['year', 'month'], how = 'left')
-        df = df.merge(
-        df[df['not_dupym']==1].groupby(['year', 'month'])
-        ['daysinmonth'].sum().cumsum().reset_index().groupby(['year','daysinmonth'])
-        ['month'].sum().transform(lambda x: x+1).reset_index()
-, on = ['year', 'month'], how = 'left')
-        df['aggdays']=df['daysinmonth_y'].fillna(0).astype('int') + df['day']
-        df.drop(columns=['daysinmonth_x','daysinmonth_y', 'not_dupym'], inplace=True)
-        return df
     except:
-        print("could not create dates - check date column exists and correct format")
+        raise OSError("could not create dates - check date column exists and correct format")
+    try:
+        df['week'] = pd.DatetimeIndex(df['date']).week
+    except:
+        pass
+    try:
+        df['hour'] = pd.DatetimeIndex(df['date']).hour
+    except:
+        pass
+    #df['daysinmonth'] = df.apply(lambda row: monthrange(row['year'], row['month']), axis=1).str[1]
+    df['not_dupym'] = 1 - df[['month', 'year']].duplicated()
+    df = df.merge(
+df[df['not_dupym']==1].groupby(['year', 'month'], as_index=False)['year', 'month'].sum().apply(lambda row: monthrange(row['year'].astype('int'), row['month'].astype('int')), axis=1).str[1].reset_index().rename(columns={0:"daysinmonth"})
+, on = ['year', 'month'], how = 'left')
+    df = df.merge(
+    df[df['not_dupym']==1].groupby(['year', 'month'])
+    ['daysinmonth'].sum().cumsum().reset_index().groupby(['year','daysinmonth'])
+    ['month'].sum().transform(lambda x: x+1).reset_index()
+, on = ['year', 'month'], how = 'left')
+    df['aggdays']=df['daysinmonth_y'].fillna(0).astype('int') + df['day']
+    df.drop(columns=['daysinmonth_x','daysinmonth_y', 'not_dupym'], inplace=True)
+    return df
+    
 
 
 @jit
@@ -51,11 +59,13 @@ def lag_var(df, var, lags):
     return df
 
 
-x=0
+
 if __name__ == '__main__':
+    x=0
+
     if x == 0:
         import main
-        df=main.json_load('x.json')
+        df=main.json_load('fanalysis\\data\\x.json')
     elif x ==1:
         import extract as e
         df = e.use_csvs()

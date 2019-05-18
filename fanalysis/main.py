@@ -1,40 +1,40 @@
 import os
 import json
 from pprint import pprint
-from misc import run_from_ipython
+from misc import Ipython
 import pandas as pd
 
-def df_to_json(df):
+def df_to_json(df, path = "fanalysis\\data\\"):
     try:       
         import json
-        f = os.path.isfile('x.json')
+        f = os.path.isfile(path + 'x.json')
         if f==True:
             r = input('your existing json file will be replaced. proceed?(y/n) ')
             a = True
             while a:
                 if r == 'y':
-                    os.remove('x.json')
-                    df.to_json('x.json', orient='records', date_unit='s')
-                    f=open('x.json', 'r')
+                    os.remove(path + 'x.json')
+                    df.to_json(path + 'x.json', orient='records', date_unit='s')
+                    f=open(path + 'x.json', 'r')
                     print("json created successfully")
                     a = False
                 elif r == 'n':
                     a= False
                     print('process terminated')
-                    if run_from_ipython == False:
+                    if Ipython.run_from_ipython() == False:
                         os._exit(1)
                     else:
                         break
                 else:
                     a = True
         elif f==False:
-            df.to_json('x.json', orient='records', date_unit='s')
-            f=open('x.json', 'r')
+            df.to_json(path + 'x.json', orient='records', date_unit='s')
+            f=open(path + 'x.json', 'r')
             print("json created successfully")
     except:
         print("no json created - process failed")
 
-def json_load(jfile='x.json'):
+def json_load(jfile='fanalysis\\data\\x.json'):
     try:
         df = pd.read_json(jfile, orient='records', convert_dates=['date'])
         print("json loaded successfully")

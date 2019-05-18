@@ -26,7 +26,7 @@ def mkdir_p(path):
 def create_path(path):
     if not os.path.exists(path):
         path = mkdir_p(path)
-        raise FileNotFoundError("directory containing files was not found. path has been created load cvs") 
+        raise FileNotFoundError("file/directory not found. path has been created load cvs") 
     else:
         pass
     return path
@@ -59,11 +59,10 @@ def use_csvs():
             'd4' : 'Bar CLOSE Bid Quote', 
             'v': 'Volume'}
     """
-    path = create_path('fanalysis/data')
+    path = create_path('fanalysis\\data\\get_fx_data')
     #collect files from data folder
     files = os.listdir(path) #use os.getcwd() if files in same path. otherwise set path
-    files = str_listconcat(files, path + "/")
-    
+    files = str_listconcat(files, path + "\\")
     #read and combine data
     header= ['date', 'd1', 'd2', 'd3', 'd4', 'v']
     dtypes = {'d1': 'float32',   
@@ -73,14 +72,17 @@ def use_csvs():
               'v': 'float32'}
     
     #could use numpy.memmap for partial read
+    
+    fx = path + '\\DAT_ASCII'
+    ln = len(fx)
+
     files_csv = [pd.read_csv(f, sep = ";", header = None, names=header, parse_dates = ['date'], 
         dtype = dtypes, infer_datetime_format=True) 
-        for f in files if f[-3:] == 'csv' and f[:24] == 'fanalysis/data/DAT_ASCII']
+        for f in files if f[-3:] == 'csv' and f[:ln] == fx]
             
     df = pd.concat(files_csv, ignore_index=True)
     
 
-    
     #set date
     #from datetime import datetime
     print(df[:10])
@@ -104,9 +106,9 @@ if __name__ == '__main__':
             'v': 'Volume'}
     headers = [ k for k in colnames][:-1]
     #headers = ['d1','d2', 'd3', 'd4']
-    #p.graph_vars(df, headers)
+    p.graph_vars(df, headers)
     
-    import dfConvert as dfC
-    dfC.df_store("c").store_df(df)
+    #import dfConvert as dfC
+    #dfC.df_store("c").store_df(df)
 
 

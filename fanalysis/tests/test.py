@@ -6,7 +6,7 @@ Created on Sun Mar 31 16:23:50 2019
 """
 
 
-x = 2
+x = 1
 
 #import untittest
 import pandas as pd
@@ -19,13 +19,13 @@ import generatedata as g
 import extract as e
 import structure as s 
 import plotting
-import dfconvert as d
+import dfConvert as d
 
 
 if x == 1:
-    #df = m.user_input()
+    df = m.user_input()
     #df = g.df_user()
-    df = d.storage_to_df('x.json').file
+    #df = d.df_store('x.json').load_df()
     print("done")
     df = s.date_split(df)
     df = s.lag_var(df, 'rnd', -1)
@@ -43,8 +43,11 @@ df = s.add_rand(df)
 print(df.head())
 print(df[['date', 'ts']])
 print(df.columns)
-d.df_to_storage(df, 'x.json')
+d.df_store('x.json').store_df(df)
 
-plotting.graph_vars(df, ['d1', 'd2', 'd3'])
+try:
+    plotting.graph_vars(df, ['d1', 'd2', 'd3'])
+except:
+    plotting.graph_vars(df, ['rnd', 'day']) 
 #plotting.graph_vars(df, df.columns)
 

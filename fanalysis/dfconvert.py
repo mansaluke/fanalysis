@@ -2,7 +2,7 @@
 consists of class df_store which allows the user to 
 easily store and load their panda dataframes. current storage formats include: json, csv 
 and parquet
---try: df_store('test.json').create_df() and df_store('test.json').store_df(df)
+--try: df_store('test.json').load_df() and df_store('test.json').store_df(df)
 --to be incorporated: feather, mongodb, csv, pickle
 """
 import pandas as pd
@@ -21,7 +21,7 @@ standardpath = 'fanalysis\\data'
 class df_store:
     """
     loads/stores specified files to and from pickle, json, csv or parquet formats 
-    e.g.1 df_store('test.json').create_df()
+    e.g.1 df_store('test.json').load_df()
     e.g.2 df_store('test.json').store_df(df)
     *args = path parts. if no path entered the default fanalysis\\data is used
     """
@@ -35,7 +35,7 @@ class df_store:
         except:
             self.filetype = "pickle"
 
-    def create_df(self):     
+    def load_df(self):     
         filename = self.filename
         filetype = self.filetype   
         if self.check_file_exists(filename) == False:
@@ -48,7 +48,7 @@ class df_store:
                 if dataframe is not None:
                     print("dataframe stored successfully")
             except:
-                raise OSError("could not load "+filetype+" - file may be too large.")
+                raise OSError("could not load "+filetype+". Check file exists - file may be too large.")
             return dataframe
         else:
             raise ValueError("Cannot load that file type. Please check file name and try again.")                          
@@ -142,7 +142,7 @@ if __name__=='__main__':
     f = df_store(filename).store_df(df)
     print("filename: " + f)
     print("load")
-    df = df_store(filename).create_df()
+    df = df_store(filename).load_df()
     t = df_store(filename).filetype
     print(df)
     print(t)

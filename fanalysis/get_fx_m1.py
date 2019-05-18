@@ -13,7 +13,7 @@ def delete_old_data(path):
     files = os.listdir(path) #use os.getcwd() if files in same path. otherwise set path
     print(files)
     from extract import str_listconcat
-    files = str_listconcat(files, path + '/')
+    files = str_listconcat(files, path + '\\')
     print('Existing files in the '+path+' folder will be deleted.')
     for f in files: 
         print(f)
@@ -32,7 +32,7 @@ def unzip_files(path):
     from extract import str_listconcat
     print(files)
     try:
-        files = str_listconcat(files, path + '/')
+        files = str_listconcat(files, path + '\\')
         print('Existing files in the '+path+' folder will be unzipped.')
         for f in files: 
             print(f)
@@ -55,7 +55,7 @@ def delete_zip_files(path):
     print(files)
     from extract import str_listconcat
     files = [f for f in files if f[-3:] == 'zip']
-    files = str_listconcat(files, path + '/')
+    files = str_listconcat(files, path + '\\')
     print('Zip files in the '+path+' folder will be deleted.')
     for f in files: 
         print(f)
@@ -100,7 +100,7 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
 #    ym_end= 12*end_year + end_month - 1
     #y, m = divmod( ym, 12 )
     
-    delete_old_data('fanalysis\data') #
+    delete_old_data(output_folder) #
     
     if start_year!=end_year:   
         if start_month == 1:
@@ -150,11 +150,11 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
      
 if __name__ == '__main__':
     print("choose the starting period and currency e.g. 2018 5 eurgbp")
-    mkdir_p('data')
-    path = 'data'
+    path = 'fanalysis\\data\\get_fx_data'
+    mkdir_p(path)
     y = int(input("enter start year e.g.2017:"))
     m = int(input("enter start month as an integer i.e for january enter 1:"))
     c = input("enter currency code e.g. eurgbp for euro to gbp")
-    delete_zip_files('fanalysis\data')
     month_year_iter_download(m, y, c,path)
-    unzip_files('fanalysis\data')
+    unzip_files(path)
+    delete_zip_files(path)
