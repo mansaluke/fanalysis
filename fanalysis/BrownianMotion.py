@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+
 def geometric_brownian_motion(T = 1, N = 100, mu = 0.1, sigma = 0.1, S0 = 20):   
     """
     dS=μS dt+σS dWt
@@ -11,7 +12,7 @@ def geometric_brownian_motion(T = 1, N = 100, mu = 0.1, sigma = 0.1, S0 = 20):
     sigma = stand dev
     w = standard brownian motion 
     S = geom standard brownian motion 
-
+    s0 = start price
     """     
     dt = float(T)/N
     t = np.linspace(0, T, N)
@@ -20,13 +21,13 @@ def geometric_brownian_motion(T = 1, N = 100, mu = 0.1, sigma = 0.1, S0 = 20):
     X = (mu-0.5*sigma**2)*t + sigma*W ### ITO'S LEMMA
     S = S0*np.exp(X) ### geometric brownian motion ###
     return S
-
 dates = pd.date_range('2012-01-01', '2013-02-22')
 T = (dates.max()-dates.min()).days / 365
 N = dates.size
 start_price = 100
 y = pd.Series(
-    geometric_brownian_motion(T, N, sigma=200, S0=start_price), index=dates)
+    geometric_brownian_motion(T, N, sigma=0.1, S0=start_price), index=dates)
+
 y.plot()
 #plt.show()
 

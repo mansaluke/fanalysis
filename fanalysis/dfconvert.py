@@ -24,6 +24,7 @@ class df_store:
     e.g.1 df_store('test.json').load_df()
     e.g.2 df_store('test.json').store_df(df)
     *args = path parts. if no path entered the default fanalysis\\data is used
+    parquet format: "test.parquet.gzip" 
     """
     def __init__(self, filename, *args):
         if args:
@@ -46,7 +47,7 @@ class df_store:
             try:
                 dataframe = eval(fn)
                 if dataframe is not None:
-                    print("dataframe stored successfully")
+                    print("dataframe loaded successfully")
             except:
                 raise OSError("could not load "+filetype+". Check file exists - file may be too large.")
             return dataframe
@@ -63,7 +64,7 @@ class df_store:
         return df
 
     def json_load(self, jfile):    
-        df = pd.read_json('fanalysis\\data\\test.json', orient='records') #, convert_dates=['date'])
+        df = pd.read_json(jfile, orient='records') #, convert_dates=['date'])
         return df
 
     def csv_load(self, csvfile):    
@@ -133,11 +134,11 @@ class df_store:
 
 if __name__=='__main__':
 
-    import numpy as np
-    df = np.random.uniform(0.8,0.9,10)
+    import BrownianMotion as BM
+    DF = BM.create_brownian_motion()
     df = pd.DataFrame(df)  
 
-    filename = "test.parquet.gzip" 
+    filename = "x.json" 
 
     f = df_store(filename).store_df(df)
     print("filename: " + f)

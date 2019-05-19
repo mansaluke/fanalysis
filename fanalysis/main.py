@@ -3,8 +3,14 @@ import json
 from pprint import pprint
 from misc import Ipython
 import pandas as pd
+import warnings
 
 def df_to_json(df, path = "fanalysis\\data\\"):
+
+    warnings.warn(
+        "gone_in_future_version_sort will be deprecated, use dfconvert instead",
+         PendingDeprecationWarning
+    )
     try:       
         import json
         f = os.path.isfile(path + 'x.json')
@@ -35,6 +41,10 @@ def df_to_json(df, path = "fanalysis\\data\\"):
         print("no json created - process failed")
 
 def json_load(jfile='fanalysis\\data\\x.json'):
+    warnings.warn(
+        "gone_in_future_version_sort will be deprecated, use dfconvert instead",
+         PendingDeprecationWarning
+    )
     try:
         df = pd.read_json(jfile, orient='records', convert_dates=['date'])
         print("json loaded successfully")

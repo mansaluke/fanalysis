@@ -15,6 +15,40 @@ def gen_uniform(low=-0.2,high=0.2):
     return x, y
 
 
+
+def create_brownian_motion():
+
+    dates = pd.date_range('2012-01-01', '2013-02-22')
+    T = (dates.max()-dates.min()).days / 365
+    N = dates.size
+    start_price = 100
+
+    def geometric_brownian_motion(T = 1, N = 100, mu = 0.1, sigma = 0.1, S0 = 20):   
+        """
+        dS=μS dt+σS dWt
+        t = time
+        n = no periods
+        mu = drift
+        sigma = stand dev
+        w = standard brownian motion 
+        S = geom standard brownian motion 
+        s0 = start price
+
+        """     
+        dt = float(T)/N
+        t = np.linspace(0, T, N)
+        W = np.random.standard_normal(size = N) 
+        W = np.cumsum(W)*np.sqrt(dt) ### standard brownian motion ###
+        X = (mu-0.5*sigma**2)*t + sigma*W ### ITO'S LEMMA
+        S = S0*np.exp(X) ### geometric brownian motion ###
+        return S
+
+
+    y = pd.Series(
+        geometric_brownian_motion(T, N, sigma=0.1, S0=start_price), index=dates)
+    return y
+
+
 class data:
     '''create data'''
     def __init__(self, p, f):

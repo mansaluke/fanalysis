@@ -6,9 +6,8 @@ Created on Sun Mar 31 16:23:50 2019
 """
 
 
-x = 1
+x = 3
 
-#import untittest
 import pandas as pd
 import sys, os
 parentdir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -18,9 +17,9 @@ import main as m
 import generatedata as g
 import extract as e
 import structure as s 
-import plotting
+from plotting import plots
 import dfConvert as d
-
+import unittest
 
 if x == 1:
     df = m.user_input()
@@ -30,24 +29,29 @@ if x == 1:
     df = s.date_split(df)
     df = s.lag_var(df, 'rnd', -1)
     df['ts'] = df['aggdays'] *0.02 + df['rnd']
+    df = s.add_rand(df)
 
 elif x == 2:
     df = e.use_csvs()
     df = s.date_split(df)
     df = s.lag_var(df, 'd1', -1)
     df['ts'] = df['aggdays'] *0.02 + df['d1']
+    df = s.add_rand(df)
 
-print(df.dtypes)
+elif x == 3:
+    df = d.df_store('x.json').load_df()
+
 print("done")
-df = s.add_rand(df)
+print(df.dtypes)
 print(df.head())
-print(df[['date', 'ts']])
 print(df.columns)
-d.df_store('x.json').store_df(df)
+print("done")
+
+d.df_store('x.csv').store_df(df)
+
 
 try:
-    plotting.graph_vars(df, ['d1', 'd2', 'd3'])
+    plots(df, None)
 except:
-    plotting.graph_vars(df, ['rnd', 'day']) 
-#plotting.graph_vars(df, df.columns)
+    plots(df, None)
 
