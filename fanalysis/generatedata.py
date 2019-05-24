@@ -112,6 +112,8 @@ def df_user():
 
 
 if __name__ == '__main__':
-    df = data(1000, "d").genseries()
+    df = data(100, "d").genseries()
     import plotting as p
-    p.graph_vars(df, ['rnd'])
+    from dfconvert import df_store
+    #p.graph_vars(df, ['rnd'])
+    df_store('df').store_df(df)

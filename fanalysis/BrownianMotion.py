@@ -32,26 +32,64 @@ y.plot()
 #plt.show()
 
 
-import quandl
-import dfConvert
-quandl.ApiConfig.api_key = "wDWwy32n6Sm4jg96yHPK"
 
-start = "2016-01-01"
-end = "2016-12-31"
 
-df = quandl.get("WIKI/AMZN", start_date = start, end_date = end)
-#dfconvert.df_store("quanddata").store_df(df)
-print(df.head())  # taking a look at the first 5 rows
 
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+seed = 5       
+N  = 2.**6     # increments
+
+def Brownian(seed, N):
+    
+    np.random.seed(seed)                         
+    dt = 1./N                                    # time step
+    b = np.random.normal(0., 1., int(N))*np.sqrt(dt)  # brownian increments
+    W = np.cumsum(b)                             # brownian path
+    return W, b
+
+
+# brownian increments
+b = Brownian(seed, N)[1]
+
+# brownian motion
+W = Brownian(seed, N)[0]
+W = np.insert(W, 0, 0.)                      # W_0 = 0. for brownian motion
+If we plot the Brownian increments we can see that the numbers oscillate as white noise, while the plot of the Brownian Motion shows a path that looks similar to the movement of a stock price.
+
+# brownian increments
+%matplotlib inline
+plt.rcParams['figure.figsize'] = (10,8)
+xb = np.linspace(1, len(b), len(b))
+plt.plot(xb, b)
+plt.title('Brownian Increments')
+
+
+
+
+
+#import quandl
+import dfconvert
+#quandl.ApiConfig.api_key = "wDWwy32n6Sm4jg96yHPK"
+#
+#start = "2016-01-01"
+#end = "2016-12-31"
+#
+#df = quandl.get("WIKI/AMZN", start_date = start, end_date = end)
+df = dfconvert.df_store('quanddata').load_df()
+#print(df.head())  # taking a look at the first 5 rows
 
 adj_close = df['Adj. Close']
 time = np.linspace(1, len(adj_close), len(adj_close))
 
 plt.plot(time, adj_close)
-
+plt.show()
+print(df.head())
 def daily_return(adj_close):
     returns = []
-    for i in xrange(0, len(adj_close)-1):
+    for i in range(0, len(adj_close)-1):
         today = adj_close[i+1]
         yesterday = adj_close[i]
         daily_return = (today - yesterday)/yesterday

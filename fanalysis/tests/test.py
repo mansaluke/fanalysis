@@ -6,7 +6,7 @@ Created on Sun Mar 31 16:23:50 2019
 """
 
 
-x = 3
+x = 2
 
 import pandas as pd
 import sys, os
@@ -18,7 +18,7 @@ import generatedata as g
 import extract as e
 import structure as s 
 from plotting import plots
-import dfConvert as d
+import dfconvert as d
 import unittest
 
 if x == 1:
@@ -50,8 +50,6 @@ print("done")
 d.df_store('x.csv').store_df(df)
 
 
-try:
-    plots(df, None)
-except:
-    plots(df, None)
+plots(df, None, 5)
+
 

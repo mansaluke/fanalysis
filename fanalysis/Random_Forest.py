@@ -9,7 +9,7 @@ Created on Sun Apr  7 14:37:11 2019
 # descriptive analysis
 # 
 # =============================================================================
-x = 1
+x = 2
 
 import extract as e
 import structure as s
@@ -18,7 +18,8 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from datetime import datetime
-import dfConvert as dfC
+import dfconvert as dfC
+from plotting import plots
 if x == 1:
     import main
     df = dfC.storage_to_df('x.json').file
@@ -28,8 +29,8 @@ elif x == 2:
 
 df = s.date_split(df)
 df = s.add_rand(df)
-#plt.plot(df['date'], df['d1'])
 
+#plots(df, None)
 
 df['average'] = df.mean(numeric_only=True, axis=1)
 
@@ -97,7 +98,7 @@ import pydotplus
 tree= rf.estimators_[3]
 export_graphviz(tree, out_file = 'tree.dot', feature_names=feature_list, rounded = True, precision=1)
 graph = pydotplus.graph_from_dot_file('tree.dot')
-graph.write_png('tree.png')
+#graph.write_png('tree.png')
 #Image(graph.create_png())
 
 

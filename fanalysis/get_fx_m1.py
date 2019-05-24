@@ -96,54 +96,89 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
     last_day_previous_month = first_day_current_month - timedelta(days=1)
     end_month = (last_day_previous_month.month)
     end_year = (last_day_previous_month.year)
-#    ym_start= 12*start_year + start_month - 1
-#    ym_end= 12*end_year + end_month - 1
-    #y, m = divmod( ym, 12 )
     
-    delete_old_data(output_folder) #
-    
+    delete_old_data(output_folder)
+    success = False
     if start_year!=end_year:   
         if start_month == 1:
             for y in range(start_year, end_year):
-                print(y)
-                try_year_download(y, currency_pair_code)
+                try:
+                    print(y)
+                    try_year_download(y, currency_pair_code)
+                    success = True
+                except:
+                    pass
                 
             if end_month != 12:
                 for m in range(1, end_month+1):
-                    print(end_year, m)
-                    download_fx_m1_data(end_year, m, currency_pair_code)
+                    try:
+                        print(end_year, m)
+                        download_fx_m1_data(end_year, m, currency_pair_code)
+                        success= True
+                    except:
+                        pass
                     
             else:
-                print(end_year)
-                try_year_download(end_year, currency_pair_code)
+                try:
+                    print(end_year)
+                    try_year_download(end_year, currency_pair_code)
+                    success= True
+                except:
+                    pass
                 
         elif start_month > 1:
             for m in range(start_month-1, 12):
-                print(start_year, m+1) 
-                download_fx_m1_data(start_year, m+1, currency_pair_code)
+                try:
+                    print(start_year, m+1) 
+                    download_fx_m1_data(start_year, m+1, currency_pair_code)
+                    success= True
+                except:
+                    pass
                 
             for y in range(start_year+1, end_year):
-                print(y)
-                try_year_download(end_year, currency_pair_code)
+                try:
+                    print(y)
+                    try_year_download(end_year, currency_pair_code)
+                    success= True
+                except:
+                    pass
                 
             if end_month != 12:
                 for m in range(1, end_month+1):
-                    print(end_year, m)
-                    download_fx_m1_data(end_year, m, currency_pair_code)
+                    try:
+                        print(end_year, m)
+                        download_fx_m1_data(end_year, m, currency_pair_code)
+                        success= True
+                    except:
+                        pass
                     
             else:
-                print(end_year)
-                try_year_download(end_year, currency_pair_code)
+                try:
+                    print(end_year)
+                    try_year_download(end_year, currency_pair_code)
+                    success= True
+                except:
+                    pass
                 
     elif start_year==end_year:
         if end_month !=12:
             for m in range(1, end_month+1):
-                print(start_year, m)
-                download_fx_m1_data(end_year, m, currency_pair_code)
+                try:
+                    print(start_year, m)
+                    download_fx_m1_data(end_year, m, currency_pair_code)
+                    success= True
+                except:
+                    pass
                 
         elif end_month ==12:
-            print(end_year)
-            try_year_download(end_year, currency_pair_code)
+            try:
+                print(end_year)
+                try_year_download(end_year, currency_pair_code)
+                success= True
+            except:
+                pass
+    if success == False:
+        Exception("No data downloaded. Please check inputs and try again.")
         
    
 

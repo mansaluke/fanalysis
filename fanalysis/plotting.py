@@ -61,5 +61,5 @@ if __name__ == "__main__":
     from generatedata import data
     df = data(1000, "d").genseries()
     print(df.head())
-    plots(df, None, 1)
+    plots(df, None, 5)
     #plots.graph_vars(df, ['rnd'], 1)

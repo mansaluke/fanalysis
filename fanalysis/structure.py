@@ -42,11 +42,21 @@ def date_split(df):
     df = df.merge(
 df[df['not_dupym']==1].groupby(['year', 'month'], as_index=False)['year', 'month'].sum().apply(lambda row: monthrange(row['year'].astype('int'), row['month'].astype('int')), axis=1).str[1].reset_index().rename(columns={0:"daysinmonth"})
 , on = ['year', 'month'], how = 'left')
+
+    #edit 21/05/2019
+    days_first_month = df[df['not_dupym']==1].groupby(['year', 'month'])['daysinmonth'].sum().cumsum().idxmin()
+    days_first_month = monthrange(days_first_month[0], days_first_month[1])[1]
     df = df.merge(
     df[df['not_dupym']==1].groupby(['year', 'month'])
-    ['daysinmonth'].sum().cumsum().reset_index().groupby(['year','daysinmonth'])
-    ['month'].sum().transform(lambda x: x+1).reset_index()
+    ['daysinmonth'].sum().cumsum().transform(lambda x: x-days_first_month).reset_index()
 , on = ['year', 'month'], how = 'left')
+    #end 
+
+    #df = df.merge(
+    #df[df['not_dupym']==1].groupby(['year', 'month'])
+    #['daysinmonth'].sum().cumsum().reset_index().groupby(['year','daysinmonth'])
+    #['month'].sum().transform(lambda x: x+1).reset_index()
+#, on = ['year', 'month'], how = 'left')
     df['aggdays']=df['daysinmonth_y'].fillna(0).astype('int') + df['day']
     df.drop(columns=['daysinmonth_x','daysinmonth_y', 'not_dupym'], inplace=True)
     return df
@@ -61,7 +71,7 @@ def lag_var(df, var, lags):
 
 
 if __name__ == '__main__':
-    x=0
+    x=1
 
     if x == 0:
         import main
@@ -75,5 +85,7 @@ if __name__ == '__main__':
     #df = lag_var(df, 'd1', -1)
     print(df.columns)
     print(df[['date', 'day', 'month', 'year', 'aggdays']])
+    from plotting import plots
+    plots(df, None, 1)
 
 
