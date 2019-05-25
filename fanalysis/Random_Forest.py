@@ -18,7 +18,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from datetime import datetime
-import dfconvert as dfC
+import dfConvert as dfC
 from plotting import plots
 if x == 1:
     import main

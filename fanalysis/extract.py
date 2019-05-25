@@ -106,9 +106,9 @@ if __name__ == '__main__':
             'v': 'Volume'}
     headers = [ k for k in colnames][:-1]
     #headers = ['d1','d2', 'd3', 'd4']
-    #p.plots(df, headers, 5)
+    p.plots(df, headers, 5)
     
-    import dfconvert as dfC
-    dfC.df_store("x.csv").store_df(df)
+    #import dfconvert as dfC
+    #dfC.df_store("x.csv").store_df(df)
 
 

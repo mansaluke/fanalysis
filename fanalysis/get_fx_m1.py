@@ -80,13 +80,16 @@ def try_year_download(y, currency_pair_code):
             except:
                 pass  #download month by month.
             month = 1
-            while not could_download_full_year:
-                output_filename = download_fx_m1_data(str(y), str(month), currency_pair_code)
-                shutil.move(output_filename, os.path.join(output_folder, output_filename))
-                month += 1
+            if could_download_full_year==False:
+                pass
+                print("could not download year "+y+", downloading by month") # line needed to prevent first month
+                while not could_download_full_year:
+                    output_filename = download_fx_m1_data(str(y), str(month), currency_pair_code)
+                    shutil.move(output_filename, os.path.join(output_folder, output_filename))
+                    month += 1
 
     except Exception:
-        print('[DONE] for currency', currency_pair_code)
+        print('failed for currency', currency_pair_code)
 
 
 
@@ -107,6 +110,7 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
                     try_year_download(y, currency_pair_code)
                     success = True
                 except:
+                    print('failed')
                     pass
                 
             if end_month != 12:
@@ -116,6 +120,7 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
                         download_fx_m1_data(end_year, m, currency_pair_code)
                         success= True
                     except:
+                        print('failed')
                         pass
                     
             else:
@@ -124,6 +129,7 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
                     try_year_download(end_year, currency_pair_code)
                     success= True
                 except:
+                    print('failed')
                     pass
                 
         elif start_month > 1:
@@ -133,16 +139,18 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
                     download_fx_m1_data(start_year, m+1, currency_pair_code)
                     success= True
                 except:
+                    print('failed')
                     pass
                 
             for y in range(start_year+1, end_year):
                 try:
                     print(y)
-                    try_year_download(end_year, currency_pair_code)
+                    try_year_download(y, currency_pair_code)
                     success= True
                 except:
+                    print('failed')
                     pass
-                
+
             if end_month != 12:
                 for m in range(1, end_month+1):
                     try:
@@ -150,6 +158,7 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
                         download_fx_m1_data(end_year, m, currency_pair_code)
                         success= True
                     except:
+                        print('failed')
                         pass
                     
             else:
@@ -158,16 +167,18 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
                     try_year_download(end_year, currency_pair_code)
                     success= True
                 except:
+                    print('failed')
                     pass
                 
     elif start_year==end_year:
         if end_month !=12:
-            for m in range(1, end_month+1):
+            for m in range(start_month, end_month+1):
                 try:
                     print(start_year, m)
                     download_fx_m1_data(end_year, m, currency_pair_code)
                     success= True
                 except:
+                    print('failed')
                     pass
                 
         elif end_month ==12:
@@ -176,6 +187,7 @@ def month_year_iter_download(start_month, start_year, currency_pair_code,output_
                 try_year_download(end_year, currency_pair_code)
                 success= True
             except:
+                print('failed')
                 pass
     if success == False:
         Exception("No data downloaded. Please check inputs and try again.")
@@ -187,9 +199,10 @@ if __name__ == '__main__':
     print("choose the starting period and currency e.g. 2018 5 eurgbp")
     path = 'fanalysis\\data\\get_fx_data'
     mkdir_p(path)
-    y = int(input("enter start year e.g.2017:"))
-    m = int(input("enter start month as an integer i.e for january enter 1:"))
-    c = input("enter currency code e.g. eurgbp for euro to gbp")
-    month_year_iter_download(m, y, c,path)
+    #y = int(input("enter start year e.g.2017:"))
+    #m = int(input("enter start month as an integer i.e for january enter 1:"))
+    #c = input("enter currency code e.g. eurgbp for euro to gbp")
+    #month_year_iter_download(m, y, c,path)
+    month_year_iter_download(1, 2000, 'eurgbp',path)
     unzip_files(path)
     delete_zip_files(path)

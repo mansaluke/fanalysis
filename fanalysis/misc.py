@@ -14,34 +14,27 @@ class Ipython():
         except NameError:
             return False
 
+class timing():
+    import threading
+    from datetime import datetime, timedelta
 
-import threading
-from datetime import datetime, timedelta
+    local = threading.local()
+    class ExecutionTimeout(Exception): pass
 
-local = threading.local()
-class ExecutionTimeout(Exception): pass
+    def start(max_duration = timedelta(seconds=1)):
+        local.start_time = datetime.now()
+        local.max_duration = max_duration
 
-def start(max_duration = timedelta(seconds=1)):
-    local.start_time = datetime.now()
-    local.max_duration = max_duration
+    def check():
+        if datetime.now() - local.start_time > local.max_duration:
+            raise ExecutionTimeout()
 
-def check():
-    if datetime.now() - local.start_time > local.max_duration:
-        raise ExecutionTimeout()
-
-def do_work():
-    start()
-    while True:
-        check()
-        # do stuff here
-    return 10
-
-
-
-#try:
-#    do_work()
-#except ExecutionTimeout:
-#    print("Timed out")
+    def do_work():
+        start()
+        while True:
+            check()
+            # do stuff here
+        return 10
 
 
 

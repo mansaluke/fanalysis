@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from calendar import monthrange
 from numba import jit
-
+import numpy as np
 
 
 @jit
@@ -18,47 +18,50 @@ def add_rand(df):
 
 
 
-def date_split(df):
+def date_split(df, datename = 'date', time=False, errors="raise"):
     """
     Extracts date elements from pandas DataFrame:
     --year, month, week, day, hour, daysinmonth, aggdays
     """
-    try:
-        df['year'] = pd.DatetimeIndex(df['date']).year
-        df['month'] = pd.DatetimeIndex(df['date']).month
-        df['day'] = pd.DatetimeIndex(df['date']).day
-    except:
-        raise OSError("could not create dates - check date column exists and correct format")
-    try:
-        df['week'] = pd.DatetimeIndex(df['date']).week
-    except:
-        pass
-    try:
-        df['hour'] = pd.DatetimeIndex(df['date']).hour
-    except:
-        pass
-    #df['daysinmonth'] = df.apply(lambda row: monthrange(row['year'], row['month']), axis=1).str[1]
-    df['not_dupym'] = 1 - df[['month', 'year']].duplicated()
-    df = df.merge(
-df[df['not_dupym']==1].groupby(['year', 'month'], as_index=False)['year', 'month'].sum().apply(lambda row: monthrange(row['year'].astype('int'), row['month'].astype('int')), axis=1).str[1].reset_index().rename(columns={0:"daysinmonth"})
-, on = ['year', 'month'], how = 'left')
+    datecol = df[datename]
 
-    #edit 21/05/2019
-    days_first_month = df[df['not_dupym']==1].groupby(['year', 'month'])['daysinmonth'].sum().cumsum().idxmin()
+    datecol_dtype = datecol.dtype
+    if isinstance(datecol_dtype, pd.core.dtypes.dtypes.DatetimeTZDtype):
+        datecol_dtype = np.datetime64
+    if not np.issubdtype(datecol_dtype, np.datetime64):
+        df[datename] = datecol = pd.to_datetime(datecol, infer_datetime_format=True, errors=errors)
+
+
+    attr = ['Year', 'Month', 'Week', 'Day', 'Dayofweek', 'Dayofyear',
+            'Is_month_end', 'Is_month_start', 'Is_quarter_end', 'Is_quarter_start', 'Is_year_end', 'Is_year_start']
+
+    for n in attr: 
+        df[n] = getattr(datecol.dt, n.lower())
+    
+    if time==True: 
+        attr = ['Hour', 'Minute', 'Second']
+        try:
+            for n in attr: 
+                df[n] = getattr(datecol.dt, n.lower())
+            raise ValueError
+        except ValueError:
+            print("No time element to extract.")
+            raise
+            
+    df['not_dupym'] = 1 - df[['Month', 'Year']].duplicated()
+
+    #split into seperate dataset - memory error
+    df_daysinmonth = df[df['not_dupym']==1].groupby(['Year', 'Month'], as_index=False)['Year', 'Month'].sum().apply(lambda row: monthrange(row['Year'].astype('int'), row['Month'].astype('int')), axis=1).str[1].reset_index().rename(columns={0:'daysinmonth'})
+    days_first_month = df_daysinmonth.groupby(['Year', 'Month'])['daysinmonth'].sum().cumsum().idxmin()
     days_first_month = monthrange(days_first_month[0], days_first_month[1])[1]
-    df = df.merge(
-    df[df['not_dupym']==1].groupby(['year', 'month'])
-    ['daysinmonth'].sum().cumsum().transform(lambda x: x-days_first_month).reset_index()
-, on = ['year', 'month'], how = 'left')
-    #end 
-
-    #df = df.merge(
-    #df[df['not_dupym']==1].groupby(['year', 'month'])
-    #['daysinmonth'].sum().cumsum().reset_index().groupby(['year','daysinmonth'])
-    #['month'].sum().transform(lambda x: x+1).reset_index()
-#, on = ['year', 'month'], how = 'left')
-    df['aggdays']=df['daysinmonth_y'].fillna(0).astype('int') + df['day']
-    df.drop(columns=['daysinmonth_x','daysinmonth_y', 'not_dupym'], inplace=True)
+    
+    df_daysinmonth = df_daysinmonth.groupby(['Year', 'Month'])['daysinmonth'].sum().cumsum().transform(lambda x: x-days_first_month).reset_index()
+    df = df.merge(df_daysinmonth, on = ['Year', 'Month'], how = 'left')
+    df['aggdays']=df['daysinmonth'].fillna(0).astype('int') + df['Day'].astype('int')
+    try:
+        df.drop(columns=['not_dupym'], inplace=False)
+    except:
+        pass
     return df
     
 
@@ -80,12 +83,12 @@ if __name__ == '__main__':
         import extract as e
         df = e.use_csvs()
         
-    df = add_rand(df)
+    #df = add_rand(df)
     df = date_split(df)
     #df = lag_var(df, 'd1', -1)
     print(df.columns)
-    print(df[['date', 'day', 'month', 'year', 'aggdays']])
-    from plotting import plots
-    plots(df, None, 1)
+    #print(df[['date', 'Day', 'Month', 'Year', 'aggdays']])
+    #from plotting import plots
+    #plots(df, None, 1)
 
 

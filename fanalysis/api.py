@@ -115,4 +115,5 @@ def download_fx_m1_data(year='2019', month ='1', pair='eurgbp', path = standardp
 
 
 if __name__ == '__main__':
-    download_fx_m1_data_year()
+    download_fx_m1_data_year(2018)
+    #download_fx_m1_data(2016, 3, 'eurgbp')
