@@ -25,6 +25,7 @@ class df_store:
     e.g.2 df_store('test.json').store_df(df)
     *args = path parts. if no path entered the default fanalysis\\data is used
     parquet format: "test.parquet.gzip" 
+    to store and load in current directory simply: df_store('test.csv', 'fanalysis').load_df()
     """
     def __init__(self, filename, *args):
         if args:

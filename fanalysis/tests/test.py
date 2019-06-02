@@ -18,7 +18,7 @@ import generatedata as g
 import extract as e
 import structure as s 
 from plotting import plots
-import dfconvert as d
+from dfconvert import df_store
 import unittest
 
 if x == 1:
@@ -47,9 +47,9 @@ print(df.head())
 print(df.columns)
 print("done")
 
-d.df_store('x.csv').store_df(df)
+df_store('x.csv').store_df(df)
 
 
-plots(df, None, 5)
+plots(df, None, 3)
 
 

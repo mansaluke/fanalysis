@@ -6,6 +6,12 @@ import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
+date_attr = ['date', 'Year', 'Month', 'Week', 'Day', 'Dayofweek', 'Dayofyear',
+            'Is_month_end', 'Is_month_start', 'Is_quarter_end', 
+            'Is_quarter_start', 'Is_year_end', 'Is_year_start',
+            'Hour', 'Minute', 'Second', 'not_dupym', 'daysinmonth',
+            'aggdays']
+
 
 class plots:
     """
@@ -41,7 +47,7 @@ class plots:
         if Ipython.run_from_ipython() is False:
             plt.rcParams['figure.figsize'] = (15, 5)
             for h in header:
-                if h != 'date':
+                if h not in date_attr:
                     plt.plot(df['date'], df[h])
                     plt.title([h])
                     plt.xlabel('Date')

@@ -54,7 +54,7 @@ def date_split(df, datename = 'date', time=False, errors="raise"):
     df_daysinmonth = df[df['not_dupym']==1].groupby(['Year', 'Month'], as_index=False)['Year', 'Month'].sum().apply(lambda row: monthrange(row['Year'].astype('int'), row['Month'].astype('int')), axis=1).str[1].reset_index().rename(columns={0:'daysinmonth'})
     days_first_month = df_daysinmonth.groupby(['Year', 'Month'])['daysinmonth'].sum().cumsum().idxmin()
     days_first_month = monthrange(days_first_month[0], days_first_month[1])[1]
-    
+
     df_daysinmonth = df_daysinmonth.groupby(['Year', 'Month'])['daysinmonth'].sum().cumsum().transform(lambda x: x-days_first_month).reset_index()
     df = df.merge(df_daysinmonth, on = ['Year', 'Month'], how = 'left')
     df['aggdays']=df['daysinmonth'].fillna(0).astype('int') + df['Day'].astype('int')
@@ -82,7 +82,9 @@ if __name__ == '__main__':
     elif x ==1:
         import extract as e
         df = e.use_csvs()
-        
+    print(df.memory_usage())
+    print(df.memory_usage().sum()) 
+    df.info(memory_usage='deep')   
     #df = add_rand(df)
     df = date_split(df)
     #df = lag_var(df, 'd1', -1)

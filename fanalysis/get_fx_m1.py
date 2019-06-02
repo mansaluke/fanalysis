@@ -69,27 +69,27 @@ def delete_zip_files(path):
 
 
 
-def try_year_download(y, currency_pair_code):
+def try_year_download(y, currency_pair_code, output_folder=False):
+    #try:
+    could_download_full_year = False
     try:
-        while True:
-            could_download_full_year = False
-            try:
-                output_filename = download_fx_m1_data_year(str(y), currency_pair_code)
+        output_filename = download_fx_m1_data_year(str(y), currency_pair_code)
+        if output_folder!=False:
+            shutil.move(output_filename, os.path.join(output_folder, output_filename))
+        could_download_full_year = True
+    except:
+        pass  #download month by month.
+    month = 1
+    if could_download_full_year==False:
+        print("could not download year ",y,", downloading by month") # line needed to prevent first month
+        while not could_download_full_year:
+            output_filename = download_fx_m1_data(str(y), str(month), currency_pair_code)
+            if output_folder!=False:
                 shutil.move(output_filename, os.path.join(output_folder, output_filename))
-                could_download_full_year = True
-            except:
-                pass  #download month by month.
-            month = 1
-            if could_download_full_year==False:
-                pass
-                print("could not download year "+y+", downloading by month") # line needed to prevent first month
-                while not could_download_full_year:
-                    output_filename = download_fx_m1_data(str(y), str(month), currency_pair_code)
-                    shutil.move(output_filename, os.path.join(output_folder, output_filename))
-                    month += 1
+            month += 1
 
-    except Exception:
-        print('failed for currency', currency_pair_code)
+    #except Exception:
+    #    print('failed for currency', currency_pair_code)
 
 
 
@@ -199,10 +199,10 @@ if __name__ == '__main__':
     print("choose the starting period and currency e.g. 2018 5 eurgbp")
     path = 'fanalysis\\data\\get_fx_data'
     mkdir_p(path)
-    #y = int(input("enter start year e.g.2017:"))
-    #m = int(input("enter start month as an integer i.e for january enter 1:"))
-    #c = input("enter currency code e.g. eurgbp for euro to gbp")
-    #month_year_iter_download(m, y, c,path)
-    month_year_iter_download(1, 2000, 'eurgbp',path)
+    y = int(input("enter start year e.g.2017:"))
+    m = int(input("enter start month as an integer i.e for january enter 1:"))
+    c = input("enter currency code e.g. eurgbp for euro to gbp")
+    month_year_iter_download(m, y, c,path)
     unzip_files(path)
     delete_zip_files(path)
+    #try_year_download(2018, 'eurgbp')

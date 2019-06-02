@@ -8,10 +8,10 @@ sys.path.insert(0, '../fanalysis/generatedata')
 
 def foo():
     print("hello")
-    a='(random stuff hahaha) '
-    freq="days"
+    a = '(random stuff hahaha) '
+    freq = "days"
     print('How many {} would you like to {} generate? '.format(freq, a))
-    str =  "p = print('How many {} would you like to {} generate? '.format(freq, a))"
+    str = "print('How many {} would you like to {} generate? '.format(freq, a))"
 
 
 def retrieve_prints(fn):
@@ -22,11 +22,11 @@ def retrieve_prints(fn):
     return string
 
 
-
 form_fields = 'field 1', 'field 2'
 
+
 class app_main:
-    
+
     def __init__(self, master):
         self.master = master
         master.title("Print Gui Tool")
@@ -36,6 +36,18 @@ class app_main:
         self.label_text.set(self.text)
         self.label = Label(master, textvariable=self.label_text)
         self.label.pack()
+
+        def makelabel(root, form_fields):
+            entries = []
+            for label in label_list:
+                row = Frame(root)
+                lab = Label(row, width=15, text=field, anchor='w')
+                ent = Entry(row)
+                row.pack(side=TOP, fill=X, padx=5, pady=5)
+                lab.pack(side=LEFT)
+                ent.pack(side=RIGHT, expand=YES, fill=X)
+                entries.append((field, ent))
+            return entries
 
         def makeform(root, form_fields):
             entries = []
@@ -48,22 +60,17 @@ class app_main:
                 ent.pack(side=RIGHT, expand=YES, fill=X)
                 entries.append((field, ent))
             return entries
-        
-
-
-
 
 
 if __name__ == '__main__':
     root = Tk()
     #root.protocol("WM_DELETE_WINDOW", callback_cancel)
-    
+
     my_gui = app_main(root)
 
     # create a menu
     menu = Menu(root)
-    root.config(menu=menu)  
+    root.config(menu=menu)
     filemenu = Menu(menu)
-  
 
     root.mainloop()

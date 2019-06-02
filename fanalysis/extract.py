@@ -85,7 +85,7 @@ def use_csvs():
 
     #set date
     #from datetime import datetime
-    print(df[:10])
+    #print(df[:10])
     #df['date'] = df['date'].apply(lambda x: datetime.strptime(x, '%Y%m%d %H%M%S'))
     df.set_index('date')
     return df
