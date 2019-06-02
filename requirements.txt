@@ -9,4 +9,4 @@ requests
 bs4
 scikit-learn
 pyarrow
-tqdm=4.32.1
+tqdm==4.32.1

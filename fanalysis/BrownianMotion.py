@@ -29,7 +29,7 @@ y = pd.Series(
     geometric_brownian_motion(T, N, sigma=0.1, S0=start_price), index=dates)
 
 y.plot()
-#plt.show()
+plt.show()
 
 
 
@@ -56,11 +56,13 @@ b = Brownian(seed, N)[1]
 
 # brownian motion
 W = Brownian(seed, N)[0]
-W = np.insert(W, 0, 0.)                      # W_0 = 0. for brownian motion
-If we plot the Brownian increments we can see that the numbers oscillate as white noise, while the plot of the Brownian Motion shows a path that looks similar to the movement of a stock price.
+W = np.insert(W, 0, 0.)                      
+# W_0 = 0. for brownian motion
+#If we plot the Brownian increments we can see that the numbers oscillate as white noise, while the plot of the Brownian Motion 
+# shows a path that looks similar to the movement of a stock price.
 
 # brownian increments
-%matplotlib inline
+#%matplotlib inline
 plt.rcParams['figure.figsize'] = (10,8)
 xb = np.linspace(1, len(b), len(b))
 plt.plot(xb, b)
@@ -120,7 +122,7 @@ def GBM(So, mu, sigma, W, T, N):
     t = np.linspace(0.,1.,N+1)
     S = []
     S.append(So)
-    for i in xrange(1,int(N+1)):
+    for i in range(1,int(N+1)):
         drift = (mu - 0.5 * sigma**2) * t[i]
         diffusion = sigma * W[i-1]
         S_temp = So*np.exp(drift + diffusion)
@@ -220,7 +222,7 @@ def EM(So, mu, sigma, b, T, N, M):
     dt = M * (1/N)  # EM step size
     L = N / M
     wi = [So]
-    for i in xrange(0,int(L)):
+    for i in range(0,int(L)):
         Winc = np.sum(b[(M*(i-1)+M):(M*i + M)])
         w_i_new = wi[i]+mu*wi[i]*dt+sigma*wi[i]*Winc
         wi.append(w_i_new)

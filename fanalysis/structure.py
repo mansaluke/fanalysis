@@ -87,10 +87,11 @@ if __name__ == '__main__':
     df.info(memory_usage='deep')   
     #df = add_rand(df)
     df = date_split(df)
-    #df = lag_var(df, 'd1', -1)
+    df = lag_var(df, 'd1', -1)
+    df.info(memory_usage='deep') 
     print(df.columns)
     #print(df[['date', 'Day', 'Month', 'Year', 'aggdays']])
-    #from plotting import plots
-    #plots(df, None, 1)
+    from dfconvert import df_store
+    df_store('data').store_df(df)
 
 

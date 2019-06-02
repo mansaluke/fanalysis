@@ -1,7 +1,9 @@
 from misc import Ipython
 import time
 import matplotlib
-matplotlib.use('tkAgg')
+from misc import Ipython
+if Ipython.run_from_ipython()!=True:
+    matplotlib.use('tkAgg')
 import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
@@ -57,10 +59,10 @@ class plots:
                     plt.close
         elif Ipython.run_from_ipython() is True:
             for h in header:
-                if h != 'date':
+                if h not in date_attr:
                     plt.plot(df['date'], df[h]) 
                     plt.title([h])
-                    plt.savefig('plots\\x.png', bbox_inches='tight')
+                    plt.show()
 
 
 if __name__ == "__main__":

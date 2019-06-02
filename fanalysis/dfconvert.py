@@ -16,7 +16,14 @@ except ImportError:
 
 
 storagetypes = ["pickle", "json", "csv", "parquet"]
-standardpath = 'fanalysis\\data'
+
+from misc import Ipython
+if Ipython.run_from_ipython()==True:
+    print('Ipython active')
+    standardpath='data'
+else:
+    print('Ipython not active')
+    standardpath = 'fanalysis\\data'
 
 class df_store:
     """
@@ -41,6 +48,7 @@ class df_store:
         filename = self.filename
         filetype = self.filetype   
         if self.check_file_exists(filename) == False:
+            print('path: ' + filename  )
             raise FileExistsError('File does not exist')
         if filetype in storagetypes:
             fn = "self." + filetype + "_load(filename)"
