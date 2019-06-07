@@ -67,7 +67,7 @@ plt.rcParams['figure.figsize'] = (10,8)
 xb = np.linspace(1, len(b), len(b))
 plt.plot(xb, b)
 plt.title('Brownian Increments')
-
+plt.show()
 
 
 
@@ -119,10 +119,10 @@ print(mu, sig)
 # N:      number of increments
 
 def GBM(So, mu, sigma, W, T, N):    
-    t = np.linspace(0.,1.,N+1)
+    t = np.linspace(0.,1.,N)
     S = []
     S.append(So)
-    for i in range(1,int(N+1)):
+    for i in range(1,int(N)):
         drift = (mu - 0.5 * sigma**2) * t[i]
         diffusion = sigma * W[i-1]
         S_temp = So*np.exp(drift + diffusion)
@@ -133,7 +133,7 @@ seed = 22
 So = adj_close[0]            # Initial AMZN stock price (01/01/2016)
 W = Brownian(seed, N)[0]
 T = 1.
-N = 2.**6
+N = 64
 
 soln = GBM(So, mu, sig, W, T, N)[0]    # Exact solution
 t = GBM(So, mu, sig, W, T, N)[1]       # time increments for  plotting
