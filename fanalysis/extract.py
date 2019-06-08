@@ -108,7 +108,7 @@ if __name__ == '__main__':
     #headers = ['d1','d2', 'd3', 'd4']
     p.plots(df, headers, 5)
     
-    #import dfconvert as dfC
-    #dfC.df_store("x.csv").store_df(df)
+    import dfconvert as dfC
+    dfC.df_store("data").store_df(df)
 
 
