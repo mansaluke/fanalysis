@@ -22,9 +22,8 @@ class plots:
     --e.g. 1.   plots(df, None, 1) - can pass none into headers to plot all headers against date
     --e.g. 2.   plots.graph_vars(df, ['rnd'], 1) - can run function directly
     """ 
-    def __init__(self, df, header = None, p = 0.05):
-        self.df, self.p = df, p
-        self.header = header
+    def __init__(self, df, header = None, p = 0.05, seperate=False, legend = False):
+        self.df, self.header, self.p, self.seperate, self.legend = df, header, p, seperate, legend
         if self.header is None:
             self.header = df.columns.values
         try:
@@ -32,10 +31,10 @@ class plots:
         except:
             raise ValueError("header should be a list")
 
-        self.graph_vars(self.df, self.header, self.p)
+        self.graph_vars(self.df, self.header, self.p, self.seperate)
 
     @staticmethod
-    def graph_vars(df, header = None, p = 0.05):
+    def graph_vars(df, header = None, p = 0.05, seperate=False, legend=False):
         """
         Produces graphs looping through time series a.k.a headers
         insert headers as list
@@ -58,11 +57,18 @@ class plots:
                     time.sleep(0.5)
                     plt.close
         elif Ipython.run_from_ipython() is True:
-            for h in header:
-                if h not in date_attr:
-                    plt.plot(df['date'], df[h]) 
-                    plt.title([h])
-                    plt.show()
+            if seperate is False:
+                for h in header:
+                    if h not in date_attr:
+                        plt.plot(df['date'], df[h], label = h)
+                        if legend == True:
+                            plt.legend(loc = 'upper left')
+            elif seperate is True:
+                for h in header:
+                    if h not in date_attr:
+                        plt.plot(df['date'], df[h]) 
+                        plt.title([h])
+                        plt.show()
 
 
 if __name__ == "__main__":
