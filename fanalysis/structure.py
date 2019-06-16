@@ -6,26 +6,29 @@ from calendar import monthrange
 from numba import jit
 import numpy as np
 import matplotlib.pyplot as plt
-
+from plotting import plots
 
 
 class anomoly_detect():
     """
+    finds the observations with the largest variance
     e.g.
-    anomoly_detect(df, 'd3').anomolies
-    d = anomoly_detect(df, 'd3').rm_anomolies(toNaN=False)
+    a = anomoly_detect(df, 'Open', graph = True)
+    print(a.anomolies)
+    a.zoom_in(remove_option=True)
     """
-    def __init__(self, df, variable, xlen = 10, graph = True):        
+    def __init__(self, df, variable, xlen = 10, graph = False):        
         self.df = df.copy()
         self.variable = variable
         self.xlen = xlen
         self.graph = graph
-        
+        self.date_col = df.select_dtypes(include=[np.datetime64]).columns[0]
+
         self.anomolies = self.differences_collect()
         
         if self.graph == True:
-            self.graph_anomolies(self.anomolies, 'diff_t', self.variable, self.xlen)
-
+            self.graph_anomolies()
+ 
             
     def differences_collect(self):
         largest = self.df[[self.variable]].copy(deep=False)
@@ -33,24 +36,60 @@ class anomoly_detect():
         largest = largest.nlargest(self.xlen, 'diff_t')
         return largest
 
-    def graph_anomolies(self, largest, diff_t, variable, xlen):
+    def graph_anomolies(self):
         plt.style.use('fivethirtyeight')
-        x_values = list(range(xlen))
-        plt.bar(x_values, largest[diff_t], orientation='vertical')
+        x_values = list(range(self.xlen))
+        plt.bar(x_values, self.anomolies['diff_t'], orientation='vertical')
         plt.ylabel('% diff')
         plt.title('Anomolies')
         plt.show()
+
+    def zoom_in(self, period = 20, remove_option = False):
+        #zooms in so user can check whether they want to remove the anomoly or not
+        if isinstance(period, bool)==True:
+            remove_option, period = period, 20
         
-    def rm_anomolies(self, toNaN = True):
         anom_list = list(self.anomolies.reset_index()['index'])
-        for i in range(len(anom_list)-1):
-            cur = anom_list[i+1]
-            prev = anom_list[i]
-            if cur == prev + 1:
-                if toNaN == False:
-                    self.df.drop(self.df.index[prev])
-                elif toNaN != False:
-                    self.df.loc[self.df.index == prev, self.variable] = np.NaN
+        remove = None
+
+        for i in anom_list:
+            start = self.df.loc[i, self.date_col]+ pd.DateOffset(-period/2)
+            end = self.df.loc[i, self.date_col]+ pd.DateOffset(period/2)
+            tmp = self.df[(self.df[self.date_col]>start) & (self.df[self.date_col]<end)][[self.date_col, self.variable]]
+            
+            if remove != 't':
+                plots.graph_vars(tmp, [self.variable], point = i)
+            #plt.plot(tmp[self.date_col], tmp[self.variable], 'b')
+            #plt.plot(tmp.loc[i, self.date_col] , tmp.loc[i, self.variable] , 'rD')
+            #plt.show()
+        
+            while remove_option == True:   
+
+                remove = input('do you wish to remove this observation? (y/n/t to terminate): ' )
+
+                if remove == 'y':
+                    self.df = self.rm_anomoly(i)
+                    break
+                if remove == 'n':
+                    break
+                if remove == 't':
+                    remove_option=False
+                    break
+
+        remove_option=False
+        
+        try:
+            self.df = self.df.set_index('index')
+        except:
+            pass
+            
+        return self.df
+    
+    def rm_anomoly(self, anomoly_index, toNaN = True):
+        if toNaN == False:
+            self.df.drop(self.df.index[anomoly_index])
+        elif toNaN != False:
+            self.df.loc[self.df.index == anomoly_index, self.variable] = np.NaN
         return self.df
 
 
@@ -69,7 +108,7 @@ def add_rand(df):
 
 def date_split(df, datename = 'date', time=False, errors="raise"):
     """
-    Extracts date elements from pandas DataFrame:
+    Extracts date elements from pandas df:
     --year, month, week, day, hour, daysinmonth, aggdays
     """
     datecol = df[datename]
@@ -122,15 +161,19 @@ if __name__ == '__main__':
 
     if x == 0:
         from dfconvert import df_store
-        df=df_store('quanddata').load_df().reset_index()
+        df=df_store('data').load_df().reset_index()
     elif x ==1:
         import extract as e
         df = e.use_csvs()
     print(df.head())
     #df = add_rand(df)
-    df = date_split(df, 'Date')
-    df = lag_var(df, 'Open', -1)
-    anomoly_detect(df, 'Open').anomolies
+    #df = date_split(df, 'Date')
+    #df = lag_var(df, 'Open', -1)
+    a = anomoly_detect(df, 'd3', graph = False)
+    print(a.anomolies)
+    df = a.zoom_in(remove_option=True)
+    print('done')
+    plots(df, None, 1)
 
 
 

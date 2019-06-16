@@ -3,6 +3,9 @@ import pandas as pd
 from datetime import datetime
 import random as rd
 
+
+
+
 def gen_uniform(low=-0.2,high=0.2):
     """
     Generates 50 randomly generated points between 0 and 1. low and high values alter the variance
@@ -53,30 +56,29 @@ class data:
     '''create data'''
     def __init__(self, p, f):
         self.p, self.f = p, f
-    try:
-        def genseries(self):
-            '''generates data'''
-            try:
-                times = pd.date_range(end=datetime.now(), periods=self.p, freq=self.f)
-            except:
-                print("Cannot generate that many periods. Please try again")
-                d = 'end'
-            if 'd' not in locals():
-                t=[]
-                for i in range(len(times)):
-                    t.append(times[i])
-                rnd=[]
-                for i in range(self.p):
-                    rnd.append(rd.random())
-                #d = pd.DataFrame( rnd, times, columns=['rnd'])
-                #d = pd.DataFrame( {'date': times, 'rnd':rnd}, columns=['date', 'rnd'])
-                np.column_stack([t, rnd])
-                d = pd.DataFrame(np.column_stack([t, rnd]), columns=['date', 'rnd'])
-                print("data created")
-            return d
-    except ValueError as err1:
-        print("Cannot generate that many periods. Please try again")
-        d = "end"
+
+    def genseries(self):
+        '''generates data'''
+        try:
+            times = pd.date_range(end=datetime.now(), periods=self.p, freq=self.f)
+        except:
+            raise ValueError("Cannot generate that many periods.")
+        if 'd' not in locals():
+            t=[]
+            for i in range(len(times)):
+                t.append(times[i])
+            rnd=[]
+            for i in range(self.p):
+                rnd.append(rd.random())
+            #d = pd.DataFrame( rnd, times, columns=['rnd'])
+            #d = pd.DataFrame( {'date': times, 'rnd':rnd}, columns=['date', 'rnd'])
+            np.column_stack([t, rnd])
+            df = pd.DataFrame(np.column_stack([t, rnd]), columns=['date', 'rnd'])
+            df["date"] = pd.to_datetime(df["date"]) 
+            df["rnd"] = pd.to_numeric(df["rnd"]) 
+            print("data created")
+        return df
+
 
     
 def df_user():
@@ -113,7 +115,6 @@ def df_user():
 
 if __name__ == '__main__':
     df = data(100, "d").genseries()
-    import plotting as p
-    from dfconvert import df_store
-    #p.graph_vars(df, ['rnd'])
-    df_store('df').store_df(df)
+    print(df.dtypes)
+    
+    
