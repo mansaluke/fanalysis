@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 from plotting import plots
 
 
-class anomoly_detect():
+class outlier_detect():
     """
     finds the observations with the largest variance
     e.g.
-    a = anomoly_detect(df, 'Open', graph = True)
-    print(a.anomolies)
+    a = outlier_detect(df, 'Open', graph = True)
+    print(a.outliers)
     a.zoom_in(remove_option=True)
     """
     def __init__(self, df, variable, xlen = 10, graph = False):        
@@ -24,10 +24,10 @@ class anomoly_detect():
         self.graph = graph
         self.date_col = df.select_dtypes(include=[np.datetime64]).columns[0]
 
-        self.anomolies = self.differences_collect()
+        self.outliers = self.differences_collect()
         
         if self.graph == True:
-            self.graph_anomolies()
+            self.graph_outliers()
  
             
     def differences_collect(self):
@@ -36,20 +36,20 @@ class anomoly_detect():
         largest = largest.nlargest(self.xlen, 'diff_t')
         return largest
 
-    def graph_anomolies(self):
+    def graph_outliers(self):
         plt.style.use('fivethirtyeight')
         x_values = list(range(self.xlen))
-        plt.bar(x_values, self.anomolies['diff_t'], orientation='vertical')
+        plt.bar(x_values, self.outliers['diff_t'], orientation='vertical')
         plt.ylabel('% diff')
-        plt.title('Anomolies')
+        plt.title('outliers')
         plt.show()
 
     def zoom_in(self, period = 20, remove_option = False):
-        #zooms in so user can check whether they want to remove the anomoly or not
+        #zooms in so user can check whether they want to remove the outlier or not
         if isinstance(period, bool)==True:
             remove_option, period = period, 20
         
-        anom_list = list(self.anomolies.reset_index()['index'])
+        anom_list = list(self.outliers.reset_index()['index'])
         remove = None
 
         for i in anom_list:
@@ -68,7 +68,7 @@ class anomoly_detect():
                 remove = input('do you wish to remove this observation? (y/n/t to terminate): ' )
 
                 if remove == 'y':
-                    self.df = self.rm_anomoly(i)
+                    self.df = self.rm_outlier(i)
                     break
                 if remove == 'n':
                     break
@@ -85,11 +85,11 @@ class anomoly_detect():
             
         return self.df
     
-    def rm_anomoly(self, anomoly_index, toNaN = True):
+    def rm_outlier(self, outlier_index, toNaN = True):
         if toNaN == False:
-            self.df.drop(self.df.index[anomoly_index])
+            self.df.drop(self.df.index[outlier_index])
         elif toNaN != False:
-            self.df.loc[self.df.index == anomoly_index, self.variable] = np.NaN
+            self.df.loc[self.df.index == outlier_index, self.variable] = np.NaN
         return self.df
 
 
@@ -169,8 +169,8 @@ if __name__ == '__main__':
     #df = add_rand(df)
     #df = date_split(df, 'Date')
     #df = lag_var(df, 'Open', -1)
-    a = anomoly_detect(df, 'd3', graph = False)
-    print(a.anomolies)
+    a = outlier_detect(df, 'd3', graph = False)
+    print(a.outliers)
     df = a.zoom_in(remove_option=True)
     print('done')
     plots(df, None, 1)

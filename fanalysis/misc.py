@@ -37,4 +37,7 @@ class timing():
         return 10
 
 
-
+def islarge_dataset(dataframe):
+    print(df.memory_usage().sum())
+    if df.memory_usage().sum()>100*10^6:
+        return
