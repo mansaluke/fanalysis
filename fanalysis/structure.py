@@ -28,6 +28,9 @@ class outlier_detect():
         
         if self.graph == True:
             self.graph_outliers()
+
+        self.delete_threshold = delete_threshold()
+        
  
             
     def differences_collect(self):
@@ -46,6 +49,8 @@ class outlier_detect():
 
     def zoom_in(self, period = 20, remove_option = False):
         #zooms in so user can check whether they want to remove the outlier or not
+
+        #correct for user specifying vairable wrong way round
         if isinstance(period, bool)==True:
             remove_option, period = period, 20
         
@@ -55,7 +60,7 @@ class outlier_detect():
         for i in anom_list:
             start = self.df.loc[i, self.date_col]+ pd.DateOffset(-period/2)
             end = self.df.loc[i, self.date_col]+ pd.DateOffset(period/2)
-            tmp = self.df[(self.df[self.date_col]>start) & (self.df[self.date_col]<end)][[self.date_col, self.variable]]
+            tmp = self.df[(self.df[self.date_col]>=start) & (self.df[self.date_col]<=end)][[self.date_col, self.variable]]
             
             if remove != 't':
                 plots.graph_vars(tmp, [self.variable], point = i)
@@ -84,7 +89,25 @@ class outlier_detect():
             pass
             
         return self.df
-    
+
+
+    def delete_threshold(self, t=10):
+        #deletes point with a variance greater or equal to threshold, t
+
+        anom_list = list(self.outliers.reset_index()['index'])
+
+        for i in anom_list[['diff_t' >= 10]]:
+            self.df = self.rm_outlier(i)
+        
+        try:
+            self.df = self.df.set_index('index')
+        except:
+            pass
+            
+        return self.df
+
+
+
     def rm_outlier(self, outlier_index, toNaN = True):
         if toNaN == False:
             self.df.drop(self.df.index[outlier_index])

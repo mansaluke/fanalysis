@@ -8,5 +8,9 @@ quandl
 requests
 bs4
 scikit-learn
+ipykernel
+pydotplus
+tables >= 3.5.2
+feather-format
 pyarrow
 tqdm==4.32.1

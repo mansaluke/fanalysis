@@ -1,6 +1,3 @@
-"""
-download historical data first (get_fx_m1)
-"""
 
 from datetime import datetime
 import os
@@ -44,13 +41,8 @@ def str_listconcat (input, str):
 #join(x.tolist())
 
 
-#def mk_file(file):
-#    try:
-#       open(file, 'x')
-#    except FileExistsError:
-#       pass
 
-def use_csvs():
+def use_csvs(path = 'fanalysis\\data\\get_fx_data'):
     """
     loads the csv files generates by the get_fx_m1/api module
     colnames = {'d1':'Bar OPEN Bid Quote', 
@@ -59,7 +51,6 @@ def use_csvs():
             'd4' : 'Bar CLOSE Bid Quote', 
             'v': 'Volume'}
     """
-    path = create_path('fanalysis\\data\\get_fx_data')
     #collect files from data folder
     files = os.listdir(path) #use os.getcwd() if files in same path. otherwise set path
     files = str_listconcat(files, path + "\\")
@@ -72,7 +63,6 @@ def use_csvs():
               'v': 'float32'}
     
     #could use numpy.memmap for partial read
-    
     fx = path + '\\DAT_ASCII'
     ln = len(fx)
 
@@ -81,12 +71,7 @@ def use_csvs():
         for f in files if f[-3:] == 'csv' and f[:ln] == fx]
             
     df = pd.concat(files_csv, ignore_index=True)
-    
 
-    #set date
-    #from datetime import datetime
-    #print(df[:10])
-    #df['date'] = df['date'].apply(lambda x: datetime.strptime(x, '%Y%m%d %H%M%S'))
     df.set_index('date')
     return df
 
@@ -99,11 +84,6 @@ if __name__ == '__main__':
     #df = s.datesplit(df)
     #df = s.lag_var(df, 'd1', -1)
     print(df.columns)
-    colnames = {'d1':'Bar OPEN Bid Quote', 
-            'd2':'Bar HIGH Bid Quote', 
-            'd3':'Bar LOW Bid Quote', 
-            'd4' : 'Bar CLOSE Bid Quote', 
-            'v': 'Volume'}
     headers = [ k for k in colnames][:-1]
     #headers = ['d1','d2', 'd3', 'd4']
     p.plots(df, headers, 5)

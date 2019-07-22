@@ -50,27 +50,30 @@ class plots:
         
         if Ipython.run_from_ipython() is False:
             plt.rcParams['figure.figsize'] = (15, 5)
-            for h in header:
-                if h not in date_attr:
-                    if point == None:
-                        plt.plot(df[date_col], df[h])
-                        plt.title([h])
-                        plt.xlabel('Date')
-                        plt.pause(p)
-                        plt.show(block=False)
-                        time.sleep(0.5)
-                        plt.close
-                    else: 
-                        plt.plot(df[date_col], df[h], 'b')
-                        plt.plot(df.loc[point, date_col] , df.loc[point, h] , 'rD')
-                        plt.title([h])
-                        plt.xlabel('Date')
-                        #plt.pause(p)
-                        plt.show()
-                        #time.sleep(0.5)
-                        #plt.clf 
-                        #plt.close
-                                               
+            try:
+                for h in header:
+                    if h not in date_attr:
+                        if point == None:
+                            plt.plot(df[date_col], df[h])
+                            plt.title([h])
+                            plt.xlabel('Date')
+                            plt.pause(p)
+                            plt.show(block=False)
+                            time.sleep(0.5)
+                            plt.close
+                        else: 
+                            plt.plot(df[date_col], df[h], 'b')
+                            plt.plot(df.loc[point, date_col] , df.loc[point, h] , 'rD')
+                            plt.title([h])
+                            plt.xlabel('Date')
+                            #plt.pause(p)
+                            plt.show()
+                            #time.sleep(0.5)
+                            #plt.clf 
+                            #plt.close
+            except:
+                pass
+
         elif Ipython.run_from_ipython() is True:
             if seperate is False:
                 for h in header:

@@ -18,7 +18,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from datetime import datetime
-import dfConvert as dfC
+import dfconvert as dfC
 from plotting import plots
 if x == 1:
     import main
@@ -96,9 +96,9 @@ import pydotplus
 #from sklearn import pydot
 
 tree= rf.estimators_[3]
-export_graphviz(tree, out_file = 'tree.dot', feature_names=feature_list, rounded = True, precision=1)
-graph = pydotplus.graph_from_dot_file('tree.dot')
-#graph.write_png('tree.png')
+export_graphviz(tree, out_file = 'fanalysis/plots/tree.dot', feature_names=feature_list, rounded = True, precision=1)
+graph = pydotplus.graph_from_dot_file('fanalysis/plots/tree.dot')
+graph.write_png('fanalysis/plots/tree.png')
 #Image(graph.create_png())
 
 
@@ -127,9 +127,9 @@ plt.ylabel('Importance')
 plt.xlabel('Variable')
 plt.title('var importance')
 
-years = test_features[:, feature_list.index('year')]
-months = test_features[:feature_list.index('month')]
-days = test_features[:, feature_list.index('day')]
+years = test_features[:, feature_list.index('Year')]
+months = test_features[:, feature_list.index('Month')]
+days = test_features[:, feature_list.index('Day')]
 print(years)
 print(months)
 print(days)
