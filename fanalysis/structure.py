@@ -29,7 +29,7 @@ class outlier_detect():
         if self.graph == True:
             self.graph_outliers()
 
-        self.delete_threshold = delete_threshold()
+        delete_threshold = self.delete_threshold()
         
  
             
@@ -94,9 +94,10 @@ class outlier_detect():
     def delete_threshold(self, t=10):
         #deletes point with a variance greater or equal to threshold, t
 
-        anom_list = list(self.outliers.reset_index()['index'])
+        anom_list = self.outliers[self.outliers.diff_t >= 10]
+        anom_list = list(anom_list.reset_index()['index'])
 
-        for i in anom_list[['diff_t' >= 10]]:
+        for i in anom_list:
             self.df = self.rm_outlier(i)
         
         try:

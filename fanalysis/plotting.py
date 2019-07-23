@@ -59,7 +59,7 @@ class plots:
                             plt.xlabel('Date')
                             plt.pause(p)
                             plt.show(block=False)
-                            time.sleep(0.5)
+                            #time.sleep(0.5)
                             plt.close
                         else: 
                             plt.plot(df[date_col], df[h], 'b')
@@ -69,8 +69,10 @@ class plots:
                             #plt.pause(p)
                             plt.show()
                             #time.sleep(0.5)
-                            #plt.clf 
-                            #plt.close
+                            #plt.clf
+
+                        if h == header[-1]:
+                            plt.close('all')
             except:
                 pass
 

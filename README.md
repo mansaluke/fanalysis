@@ -44,10 +44,24 @@ df = dfc.use_csvs(path)
 import plotting as p
 p.plots(df)
 
-#columns added for RF
 import structure as s
+
+columns = 'Bar OPEN Bid Quote', 'Bar HIGH Bid Quote', 'Bar LOW Bid Quote', 'Bar CLOSE Bid Quote', 'Volume'
+
+for col in columns:
+    print(col)
+    try:
+        a = s.outlier_detect(df, col, graph = False)
+        print(a.outliers)
+        df= a.delete_threshold()
+    except:
+        pass
+
+p.plots(df)
+
+#columns added for RF
 df = s.date_split(df)
-df = s.lag_var(df, 'd1', -1)
+df = s.lag_var(df, 'Bar OPEN Bid Quote', -1)
 
 #here we store file in HDF5 format.
 dfc.df_store("data.h5").store_df(df)
