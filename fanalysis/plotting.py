@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import numpy as np
+from sklearn.tree import export_graphviz
 
 date_attr = ['date', 'Year', 'Month', 'Week', 'Day', 'Dayofweek', 'Dayofyear',
             'Is_month_end', 'Is_month_start', 'Is_quarter_end', 
@@ -96,6 +97,27 @@ class plots:
                         plt.show()
 
 
+
+def draw_tree(tr, df_cols, size=10, ratio=0.6, precision=0, max_depth=3):
+    """ Draws a representation of a random forest in IPython.
+    Parameters:
+    -----------
+    t: The tree you wish to draw
+    df_cols: The data used to train the tree. This is used to get the names of the features.
+    """
+    from sklearn.tree import export_graphviz 
+    import pydotplus
+    import IPython.display
+    import graphviz
+    import re
+    s=export_graphviz(tr, max_depth=max_depth, out_file=None, feature_names=df_cols, filled=True, rounded = True,
+                      special_characters=True, rotate=True, precision=precision)
+    display(graphviz.Source(re.sub('Tree {',
+       f'Tree {{ size={size}; ratio={ratio}', s)))
+
+
+
+       
 if __name__ == "__main__":
     #from generatedata import data
     #c = data(1000, "d").genseries()

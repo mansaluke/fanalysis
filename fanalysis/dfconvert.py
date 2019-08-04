@@ -30,7 +30,6 @@ if Ipython.run_from_ipython()==True:
     print('Ipython active')
     standardpath='data'
 else:
-    print('Ipython not active')
     standardpath = 'fanalysis\\data'
 
 class df_store:

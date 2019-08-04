@@ -60,7 +60,7 @@ for col in columns:
 p.plots(df)
 
 #columns added for RF
-df = s.date_split(df)
+df = s.date_split(df, datename = 'date', time=True)
 df = s.lag_var(df, 'Bar OPEN Bid Quote', -1)
 
 #here we store file in HDF5 format.
@@ -78,9 +78,9 @@ print(df.head())
 
 - Tick data and current data
 - Improve performance - big data techniques (e.g. spark and hadoop)
-- Additional independent variables
 - Time series and neural network integration
 - Incorporate dynamic optimization model
+- Additional independent variables
 - Full integration of all modules
 - App gui
 - Automate continuous analysis

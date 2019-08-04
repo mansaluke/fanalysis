@@ -133,7 +133,11 @@ def add_rand(df):
 def date_split(df, datename = 'date', time=False, errors="raise"):
     """
     Extracts date elements from pandas df:
-    --year, month, week, day, hour, daysinmonth, aggdays
+    --year, month, week, day, hour, daysinmonth, aggdays etc
+    aggdays corresponds to the cumulative sum of days
+    daysinmonth corresponds to the amount of days in each month of the respective datapoint
+    the other date elements are standard pandas date parts
+    df = datesplit(df, time= True)
     """
     datecol = df[datename]
 
@@ -155,14 +159,15 @@ def date_split(df, datename = 'date', time=False, errors="raise"):
         try:
             for n in attr: 
                 df[n] = getattr(datecol.dt, n.lower())
-            raise ValueError
         except ValueError:
-            print("No time element to extract.")
-            raise
+            raise ValueError("No time element to extract.")
             
     df['not_dupym'] = 1 - df[['Month', 'Year']].duplicated()
     
-    df_daysinmonth = df[df['not_dupym']==1].groupby(['Year', 'Month'], as_index=False)['Year', 'Month'].sum().apply(lambda row: monthrange(row['Year'].astype('int'), row['Month'].astype('int')), axis=1).str[1].reset_index().rename(columns={0:'daysinmonth'})
+    df_daysinmonth = df[df['not_dupym']==1].groupby(['Year', 'Month'], as_index=False)['Year', 'Month'] \
+        .sum().apply(lambda row: monthrange(row['Year'].astype('int'), row['Month'].astype('int')) \
+        , axis=1).str[1].reset_index().rename(columns={0:'daysinmonth'})
+
     days_first_month = df_daysinmonth.groupby(['Year', 'Month'])['daysinmonth'].sum().cumsum().idxmin()
     days_first_month = monthrange(days_first_month[0], days_first_month[1])[1]
     
@@ -180,24 +185,27 @@ def lag_var(df, var, lags):
 
 
 
+
+
 if __name__ == '__main__':
     x=0
 
     if x == 0:
         from dfconvert import df_store
-        df=df_store('data').load_df().reset_index()
+        df=df_store('quanddata').load_df().reset_index()
     elif x ==1:
         import extract as e
         df = e.use_csvs()
     print(df.head())
     #df = add_rand(df)
-    #df = date_split(df, 'Date')
+    df = date_split(df, 'Date')
     #df = lag_var(df, 'Open', -1)
-    a = outlier_detect(df, 'd3', graph = False)
-    print(a.outliers)
-    df = a.zoom_in(remove_option=True)
+    #a = outlier_detect(df, 'd3', graph = False)
+    #print(a.outliers)
+    #df = a.zoom_in(remove_option=True)
+    print(df.head())
     print('done')
-    plots(df, None, 1)
+    #plots(df, None, 1)
 
 
 
