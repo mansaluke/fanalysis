@@ -3,19 +3,20 @@
 
 ## Objectives
 
-Download exchange rates and perform predictive analyses using various techniques including the following:
+Download exchange rates and perform predictive analyses using various techniques, including the following:
 
 - Standard Econometric Time Series Forecasts
 - Machine\deep learning models e.g. Random forests, Neural networks etc
 
-**Finally, the forecasts will be used as inputs in a dynamic optimization model which identifies the optimal portfolio of the set of rates.**
+**Finally, the forecasts will be used as inputs in a dynamic optimization (mean variance) model which identifies the optimal portfolio of the set of rates.**
 
 ## Current funcionality
 
-- Create dummy data
-- Download historical data (m1)
-- Store in various formats i.e. json, csv, pickle and parquet formats
-- Generate very basic random forest
+- Create dummy data.
+- Download historical data (m1).
+- Structure data appropriately for analysis.
+- Store data in various formats i.e. json, csv, pickle, parquet, feather and HDF5.
+- Generate basic random forest for feature and predictive analysis.
 
 ### Use
 
@@ -68,15 +69,40 @@ dfc.df_store("data.h5").store_df(df)
 #HDF5 or feather recommended for large files. See dfconvert module for full list of file formats.
 
 ##############################################
+#Random Forest
+
+import pandas as pd
+import dfconvert as dfc
+
 df = dfc.df_store("data.h5").load_df()
 print(df.head())
 
+df = df.sample(n=10000)
+
+import Random_Forest as r
+
+#start tree
+rf = r.do_rf(df, n_estimators=5)
+
+#draw tree
+rf.draw()
+
+# create predictions with graphical depiction of forecasts vs raw data
+rf.predict_out(True)
+
+#print interesting information
+rf.return_error_details()
+rf.print_score()
+rf.importances()
+rf.tree_preds()
+rf.feature_analysis('Year')
 
 ```
 
 ## To be introduced/developed
 
 - Tick data and current data
+- Include finance specific structural functions
 - Improve performance - big data techniques (e.g. spark and hadoop)
 - Time series and neural network integration
 - Incorporate dynamic optimization model
