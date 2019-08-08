@@ -20,6 +20,13 @@ Download exchange rates and perform predictive analyses using various techniques
 
 ### Use
 
+#### Requirements
+
+Major requirements
+
+- Required: python 3.7
+- Recommended: https://github.com/cuemacro/findatapy - for installation of tick data.
+
 #### Setup
 
 ```shell
@@ -41,6 +48,10 @@ g.delete_zip_files(path)
 #load and concatenate CSVs into single dataframe.
 import dfconvert as dfc
 df = dfc.use_csvs(path)
+
+# if using different source start from here
+# df =df.reset_index() # to be used if date is in index
+
 
 import plotting as p
 p.plots(df)

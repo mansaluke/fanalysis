@@ -1,16 +1,2 @@
-matplotlib >= 3.0.2
-numpy >=1.16.0
-pandas >= 0.24.0
-pydot >=1.4.1
-graphviz >=0.10.1
-numba >= 0.16.0
-quandl
-requests
-bs4
-scikit-learn
-ipykernel
-pydotplus
-tables >= 3.5.2
-feather-format
-pyarrow
-tqdm==4.32.1
+# install packages in the [build] category, from setup.py
+. setup.py[build]

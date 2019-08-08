@@ -12,7 +12,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import forest
 from sklearn import metrics
 
-import extract as e
 import structure as s
 import plotting
 from dfconvert import df_store
@@ -41,14 +40,14 @@ def reset_rf_samples():
 #statistical calculations
 def rmse(x,y): return np.sqrt(((x-y)**2).mean())
 
-def print_score(rf, train_dependent, test_dependent, train_independent, test_independent):
+def print_score(rf, train_dependent, valid_dependent, train_independent, valid_independent):
         """
-        prints train rmse, test rmse,
-        r^2 train, test,
+        prints train rmse, valid rmse,
+        r^2 train, valid,
         oob_score_
         """
-        res = ['RMSE of train:', rmse(rf.predict(train_dependent), train_independent),'RMSE of test:', rmse(rf.predict(test_dependent), test_independent),
-                    'RF score (r^2) of train:', rf.score(train_dependent, train_independent), 'RF score (r^2) of (test)', rf.score(test_dependent, test_independent)]
+        res = ['RMSE of train:', rmse(rf.predict(train_dependent), train_independent),'RMSE of valid:', rmse(rf.predict(valid_dependent), valid_independent),
+                    'RF score (r^2) of train:', rf.score(train_dependent, train_independent), 'RF score (r^2) of (valid)', rf.score(valid_dependent, valid_independent)]
         if hasattr(rf, 'oob_score_'): res.append('RF oob_score (r^2):', rf.oob_score_)
         print(res)
 
@@ -158,7 +157,7 @@ class do_rf():
    def __init__(self,
                 df,
                 indep_col = 'Bar OPEN Bid Quote',
-                test_size = 0.25,
+                valid_size = 0.25,
                 sample_random_state = 42,
                 n_estimators=40,
                 criterion="mse",
@@ -186,14 +185,17 @@ class do_rf():
       self.df = df
       self.n_estimators = n_estimators
       self.labels = df[indep_col]                 
-      self.test_size = test_size
+      self.valid_size = valid_size
       self.sample_random_state = sample_random_state
       self.indep_col = indep_col
+      self.available_date_cols = [x for x in \
+         ['Year', 'Month', 'Day', 'Hour', 'Minute', 'Second'] if x in list(df.columns)]
+
 
       #define dataframes
       self.features = self.feature_adjust_dataframe(self.df, self.indep_col)
-      self.train_dependent, self.test_dependent, self.train_independent, self.test_independent = self.split_df()
-
+      self.train_dependent, self.valid_dependent, self.train_independent, self.valid_independent = self.split_df()
+      self.predictions = self.predict_out(False)
 
 
    def feature_adjust_dataframe(self, df, indep_col):
@@ -231,40 +233,34 @@ class do_rf():
       return features
 
    def split_df(self): 
-      return train_test_split(self.features, self.labels, test_size = self.test_size, random_state=self.sample_random_state) 
+      return train_test_split(self.features, self.labels, test_size = self.valid_size, random_state=self.sample_random_state) 
 
+   @property
    def split_shape(self): 
-      return self.train_dependent.shape, self.test_dependent.shape, self.train_independent.shape, self.test_independent.shape  
+      return self.train_dependent.shape, self.valid_dependent.shape, self.train_independent.shape, self.valid_independent.shape  
 
    def draw(self, size=10, ratio=0.6, precision=0, max_depth=3):
       plotting.draw_tree(self.rf.estimators_[self.n_estimators-1], list(self.features.columns), size=size, ratio=ratio, precision=precision, max_depth=max_depth)
 
-   def predict_out(self, graph = False):
+   def predict_out(self, graph = True):
       self.rf.fit(self.train_dependent, self.train_independent)
-      self.predictions = self.rf.predict(self.test_dependent)
-       
+      self.predictions = self.rf.predict(self.valid_dependent)
+
       if graph == True:
          self.graph_predictions()
       
-      return self.predictions #, self.baseline_errors, rfprediction_errors
+      return self.predictions
 
    def graph_predictions(self):
 
-      
-      test_dates =pd.to_datetime(self.test_dependent[['Year', 'Month', 'Day', 'Hour', 'Minute', 'Second']])
-      #self.test_dependent['prediction'] = self.predict_out()
-
-      prediction_data = pd.DataFrame(data = {'date': test_dates, 'prediction': self.predict_out()})
-
-
+      valid_dates =pd.to_datetime(self.valid_dependent[self.available_date_cols])
+      #self.valid_dependent['prediction'] = self.predictions
+      prediction_data = pd.DataFrame(data = {'date': valid_dates, 'prediction': self.predictions})
       fig, ax = plt.subplots()
       ax.plot(self.df['date'], self.df[self.indep_col], 'b.', label = 'actual')
       ax.plot(prediction_data['date'], prediction_data['prediction'], '.', label = 'prediction')
-      # rotate and align the tick labels so they look better
-      #fig.autofmt_xdate()
-      # use a more precise date string for the x axis locations in the
-      # toolbar
-      #ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
+      fig.autofmt_xdate()
+      ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
       ax.set_title('Actual and Predicted Values'); plt.xlabel('Date'); plt.ylabel('rate')
       plt.show()
 
@@ -273,15 +269,12 @@ class do_rf():
 
    def return_error_details(self, to_return = 'mean'):
 
-      baseline_errors = self.error_calc(self.features['mean'], self.test_independent)
-      rfprediction_errors = self.error_calc(self.predict_out(), self.test_independent)
-
+      baseline_errors = self.error_calc(self.features['mean'], self.valid_independent)
+      rfprediction_errors = self.error_calc(self.predictions, self.valid_independent)
       mean_baseline_error = np.mean(baseline_errors)
       mean_rfprediction_error = np.mean(rfprediction_errors)
-
       mean_error_difference = mean_baseline_error - mean_rfprediction_error
-
-      mape = (rfprediction_errors / self.test_independent) *100
+      mape = (rfprediction_errors / self.valid_independent) *100
       accuracy = 100 - np.mean(mape)
       
       if to_return =='all':
@@ -295,42 +288,70 @@ class do_rf():
             'accuracy (100-MAPE):', accuracy, '%')
 
    def print_score(self):
-      print_score(self.rf, self.train_dependent, self.test_dependent, self.train_independent, self.test_independent)   
+      print_score(self.rf, self.train_dependent, self.valid_dependent, self.train_independent, self.valid_independent)   
 
-   def tree_preds(self, n_jobs=4):
+   def tree_preds(self, n_jobs=4, graph = True):
       """ get predictions of each tree
       """
-      def get_preds(t): return t.predict(self.test_dependent)
+      def get_preds(t): return t.predict(self.valid_dependent)
       
       t_preds = np.stack(parallel_trees(self.rf, get_preds, n_jobs))
 
-      plt.plot([metrics.r2_score(self.test_independent, np.mean(t_preds[:i+1], axis=0)) for i in range(self.n_estimators)])
+      if graph ==True:
+         plt.plot([metrics.r2_score(self.valid_independent, np.mean(t_preds[:i+1], axis=0)) for i in range(self.n_estimators)])
 
       return t_preds
 
-   def importances(self):
+   def importances(self, graph = True):
+
       importances = list(self.rf.feature_importances_)
-      print(importances)
       feature_importances = [(feature, importance) for feature, importance in zip (list(self.features.columns), importances)]
       feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
       [print('variable: {:20} importance : {}'.format(*pair)) for pair in feature_importances if pair[1] != 0]
-      plt.style.use('fivethirtyeight')
-      x_values=list(range(len(importances)))
-      plt.bar(x_values, importances, orientation='vertical')
-      plt.xticks(x_values, list(self.features.columns), rotation='vertical')
-      plt.ylabel('Importance');plt.xlabel('Variable');plt.title('var importance')
 
-   def feature_analysis(self, col):
-      x = self.df.sample(n = self.split_shape()[0][0]) 
-      x['prediction_std'] = np.std(self.predict_out(), axis=0).size
-      x['prediction'] = np.mean(self.predict_out(), axis=0)
-      x[col].value_counts().plot.barh()
+      if graph == True:
+         plt.style.use('fivethirtyeight')
+         x_values=list(range(len(importances)))
+         plt.bar(x_values, importances, orientation='vertical')
+         plt.xticks(x_values, list(self.features.columns), rotation='vertical')
+         plt.ylabel('Importance');plt.xlabel('Variable');plt.title('var importance')
+
+      return feature_importances
+
+   def feature_analysis(self, col, graph = True):
+
+      x = self.df.sample(n = self.split_shape[0][0]) 
+      x['prediction_std'] = np.std(self.predictions, axis=0).size
+      x['prediction'] = np.mean(self.predictions, axis=0)
+
+      if graph == True:
+         x[col].value_counts().plot.barh()
 
       flds = [col, self.indep_col, 'prediction', 'prediction_std']
-      print(x[flds].groupby(col, as_index=False).mean())
+      summ = x[flds].groupby(col, as_index=False).mean()
+
+      return (summ.prediction_std/summ.prediction).sort_values(ascending=False)
+
 
 
 
 
 if __name__ == "__main__":
-   pass
+
+   df = df_store('data.h5').load_df()
+   
+   df = df.sample(n=5000)
+   def drop_col(df, col_names):
+       for col in col_names:
+           if col in df.columns:
+               df = df.drop(col, axis = 1)
+       return df
+
+   df = drop_col(df, ['aggdays', 'daysinmonth', 'Bar OPEN Bid Quote_lag-1'])
+   print(df.head())
+   rf = do_rf(df, n_estimators=5)
+   rf.predict_out(True)
+   rf.return_error_details()
+   rf.print_score()
+   rf.importances()
+   rf.tree_preds()

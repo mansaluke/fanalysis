@@ -2,12 +2,10 @@
 __pycache__/
 env64/
 .gitcredentials
-fanalysis/.gitcredentials
-fanalysis/bm.ipynb
 fanalysis/data/
+fanalysis/bm.ipynb
 fanalysis/draw_tree
 fanalysis/draw_tree.py
-fanalysis/extract.py
 fanalysis/fastai_structured.py
 fanalysis/get_packages.py
 fanalysis/main.py

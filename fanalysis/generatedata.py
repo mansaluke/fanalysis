@@ -2,31 +2,70 @@ import numpy as np
 import pandas as pd 
 from datetime import datetime
 import random as rd
+from pandas import DataFrame
 
 
 
 
-def gen_uniform(low=-0.2,high=0.2):
-    """
-    Generates 50 randomly generated points between 0 and 1. low and high values alter the variance
-    """
-    import matplotlib.pyplot as plt
-    x = np.linspace(0, 1)  
-    y = x + np.random.uniform(low,high,x.shape)
-    plt.scatter(x, y)
-    plt.show()
-    return x, y
+class data:
+    '''create data
+    e.g. df = data(100, "S").genseries()
 
 
+    pandas freq options:
+    Alias,    Description
+    B,    business day frequency
+    C,    custom business day frequency
+    D,    calendar day frequency
+    W,    weekly frequency
+    M,    month end frequency
+    SM,    semi-month end frequency (15th and end of month)
+    BM,    business month end frequency
+    CBM,    custom business month end frequency
+    MS,    month start frequency
+    SMS,    semi-month start frequency (1st and 15th)
+    BMS,    business month start frequency
+    CBMS,    custom business month start frequency
+    Q,    quarter end frequency
+    BQ,    business quarter end frequency
+    QS,    quarter start frequency
+    BQS,    business quarter start frequency
+    A, Y,    year end frequency
+    BA, BY,    business year end frequency
+    AS, YS,    year start frequency
+    BAS, BYS,    business year start frequency
+    BH,    business hour frequency
+    H,    hourly frequency
+    T, min,    minutely frequency
+    S,    secondly frequency
+    L, ms,    milliseconds
+    U, us,    microseconds
+    N, nanoseconds
+    
+    
+    '''
+    def __init__(self, starting_period, frequency):
 
-def create_brownian_motion():
+        self.p, self.f = starting_period, frequency
 
-    dates = pd.date_range('2012-01-01', '2013-02-22')
-    T = (dates.max()-dates.min()).days / 365
-    N = dates.size
-    start_price = 100
+        self.dates = DataFrame(self.gendateseries())
+        self.length = len(self.dates)
 
-    def geometric_brownian_motion(T = 1, N = 100, mu = 0.1, sigma = 0.1, S0 = 20):   
+    def gendateseries(self):
+        try:
+            dates = pd.date_range(end=datetime.now(), periods=self.p, freq=self.f)
+        except:
+            raise ValueError("Cannot generate that many periods.")
+        return dates
+
+    def genuniformseries(self, low =0, high = 1 ):
+
+        dates = self.gendateseries()
+        df = dates.assign(rnd=np.random.uniform(low,high,self.length))
+        print("data created")
+        return df
+
+    def create_brownian_motion(self, start_price = 100, T = 1, N = 100, mu = 0.1, sigma = 0.1, S0 = 20):
         """
         dS=μS dt+σS dWt
         t = time
@@ -36,85 +75,25 @@ def create_brownian_motion():
         w = standard brownian motion 
         S = geom standard brownian motion 
         s0 = start price
-
-        """     
+        """   
+        N = self.dates.size
+        T = ((self.dates.max()-self.dates.min())/np.timedelta64(1,'D'))/ 365
         dt = float(T)/N
         t = np.linspace(0, T, N)
         W = np.random.standard_normal(size = N) 
         W = np.cumsum(W)*np.sqrt(dt) ### standard brownian motion ###
         X = (mu-0.5*sigma**2)*t + sigma*W ### ITO'S LEMMA
         S = S0*np.exp(X) ### geometric brownian motion ###
-        return S
-
-
-    y = pd.Series(
-        geometric_brownian_motion(T, N, sigma=0.1, S0=start_price), index=dates)
-    return y
-
-
-class data:
-    '''create data'''
-    def __init__(self, p, f):
-        self.p, self.f = p, f
-
-    def genseries(self):
-        '''generates data'''
-        try:
-            times = pd.date_range(end=datetime.now(), periods=self.p, freq=self.f)
-        except:
-            raise ValueError("Cannot generate that many periods.")
-        if 'd' not in locals():
-            t=[]
-            for i in range(len(times)):
-                t.append(times[i])
-            rnd=[]
-            for i in range(self.p):
-                rnd.append(rd.random())
-            #d = pd.DataFrame( rnd, times, columns=['rnd'])
-            #d = pd.DataFrame( {'date': times, 'rnd':rnd}, columns=['date', 'rnd'])
-            np.column_stack([t, rnd])
-            df = pd.DataFrame(np.column_stack([t, rnd]), columns=['date', 'rnd'])
-            df["date"] = pd.to_datetime(df["date"]) 
-            df["rnd"] = pd.to_numeric(df["rnd"]) 
-            print("data created")
-        return df
-
+        df = self.dates.assign(bm = S)
+        return pd.DataFrame(S)
 
     
-def df_user():
-    print('you will need to choose the frequency and number of periods of the data. e.g. 10 days')
-    uf = True
-
-    while uf:
-        f = input('please choose a frequency or press t to terminate (enter d for day or m for month) ')
-        if f == 'd' or f =='m' or f=='t':
-            if f != 't':
-                if f=='d':
-                    freq='days'
-                elif f=='m':
-                    freq='months'
-                p = input('How many {} would you like to generate? '.format(freq))
-                try:
-                    p = int(p)
-                    d = data(p, f)
-                    df = d.genseries()
-                    print(df.head())
-                    if not isinstance(df, str):
-                        uf = False
-                    return df
-                except ValueError:
-                    print('Non-numeric data inputted. Please try again.')
-            elif f =='t':
-                uf = False
-                break
-        else:
-            print('response not recognised. Please try again.')
-
 
 
 
 if __name__ == '__main__':
-    df = data(100, "d").genseries()
-    print(df.dtypes)
-    
+    import plotting as p
+    df = data(100, "S").create_brownian_motion()
+    print(df)
+    p.plots(df)
     

@@ -3,7 +3,7 @@ consists of class df_store which allows the user to
 easily store and load their panda dataframes. current storage formats include: json, csv, parquet, pickle, feather and HDF5
 --df_store('test.json').load_df()
 --df_store('test.json').store_df(df)
---to be incorporated: BSON
+-- TODO incorporate: BSON
 """
 from datetime import datetime
 import pandas  as pd
