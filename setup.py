@@ -1,10 +1,15 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r") as fh:
+      long_description = fh.read()
+
 setup(name='fanalyasis',
       version='0.9',
-      description='Machine learning for FOREX data',
       author='Luke Mcleary',
       author_email='lukemcleary95@gmail.com',
+      description='Machine learning for FOREX data',
+      long_description=long_description,
+      long_description_content_type="text/markdown",
       license='Apache 2.0',
       keywords = ['pandas', 'sklearn', 'data', 'forex'],
       url = 'https://github.com/mansaluke/fanalysis',
