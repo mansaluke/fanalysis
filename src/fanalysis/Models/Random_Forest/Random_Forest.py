@@ -12,7 +12,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import forest
 from sklearn import metrics
 
-import structure as s
+from fanalysis import structure as s
 import plotting
 from dfconvert import df_store
 
@@ -337,21 +337,21 @@ class do_rf():
 
 
 if __name__ == "__main__":
-
-   df = df_store('data.h5').load_df()
-   
-   df = df.sample(n=5000)
-   def drop_col(df, col_names):
-       for col in col_names:
-           if col in df.columns:
-               df = df.drop(col, axis = 1)
-       return df
-
-   df = drop_col(df, ['aggdays', 'daysinmonth', 'Bar OPEN Bid Quote_lag-1'])
-   print(df.head())
-   rf = do_rf(df, n_estimators=5)
-   rf.predict_out(True)
-   rf.return_error_details()
-   rf.print_score()
-   rf.importances()
-   rf.tree_preds()
+   pass
+   #df = df_store('EURUSD_tick_historicals_aug.h5').load_df()
+#
+   #df = df.sample(n=5000)
+   #def drop_col(df, col_names):
+   #    for col in col_names:
+   #        if col in df.columns:
+   #            df = df.drop(col, axis = 1)
+   #    return df
+#
+   #df = drop_col(df, ['aggdays', 'daysinmonth', 'Bar OPEN Bid Quote_lag-1'])
+   #print(df.head())
+   #rf = do_rf(df, n_estimators=5)
+   #rf.predict_out(True)
+   #rf.return_error_details()
+   #rf.print_score()
+   #rf.importances()
+   #rf.tree_preds()

@@ -48,7 +48,7 @@ class data:
 
         self.p, self.f = starting_period, frequency
 
-        self.dates = DataFrame(self.gendateseries())
+        self.dates = DataFrame(self.gendateseries(), columns = ['Date'])
         self.length = len(self.dates)
 
     def gendateseries(self):
@@ -82,18 +82,17 @@ class data:
         t = np.linspace(0, T, N)
         W = np.random.standard_normal(size = N) 
         W = np.cumsum(W)*np.sqrt(dt) ### standard brownian motion ###
+        W = W.reshape(100, 1)
         X = (mu-0.5*sigma**2)*t + sigma*W ### ITO'S LEMMA
         S = S0*np.exp(X) ### geometric brownian motion ###
-        df = self.dates.assign(bm = S)
-        return pd.DataFrame(S)
-
+        return self.dates.assign(bm = S)
     
 
 
 
 if __name__ == '__main__':
     import plotting as p
-    df = data(100, "S").create_brownian_motion()
-    print(df)
+    df = data(100, "d").create_brownian_motion()
+    print(df.head())
     p.plots(df)
     

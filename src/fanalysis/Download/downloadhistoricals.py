@@ -6,9 +6,6 @@
 #session.start()
 
 
-import findatapy
-
-
 from findatapy.market import MarketDataGenerator, Market, MarketDataRequest
 from dfconvert import df_store
 
@@ -37,7 +34,7 @@ def generate_market_data_for_tests():
     df = market.fetch_market(md_request)
 
     try:
-        df_store('EURUSD_tick_historicals.h5').store_df(df)
+        df_store('EURUSD_tick_historicals_2019.h5').store_df(df)
     except:
         df_store('EURUSD_tick_historicals.feather').store_df(df)
     #df.to_hdf5("fanalysis\\data\\EURUSD_tick.h5")

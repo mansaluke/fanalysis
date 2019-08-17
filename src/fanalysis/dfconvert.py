@@ -9,12 +9,14 @@ from datetime import datetime
 import pandas  as pd
 from calendar import monthrange
 import sys, os
-from misc import Ipython
+from utils import Ipython
 import pandas as pd
 import json
 import pickle
-import feather
-
+try:
+    import feather
+except:
+    pass
 
 try:
     import pyarrow.parquet as pq

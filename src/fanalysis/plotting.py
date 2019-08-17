@@ -1,7 +1,7 @@
 from misc import Ipython
 import time
 import matplotlib
-from misc import Ipython
+from utils import Ipython
 if Ipython.run_from_ipython()!=True:
     matplotlib.use('tkAgg')
 import matplotlib.pyplot as plt
@@ -53,7 +53,7 @@ class plots:
             plt.rcParams['figure.figsize'] = (15, 5)
             try:
                 for h in header:
-                    if h not in date_attr:
+                    if h not in date_attr and h != date_col:
                         if point == None:
                             plt.plot(df[date_col], df[h])
                             plt.title([h])
@@ -80,7 +80,7 @@ class plots:
         elif Ipython.run_from_ipython() is True:
             if seperate is False:
                 for h in header:
-                    if h not in date_attr:
+                    if h not in date_attr and h != date_col:
                         if point == None:
                             plt.plot(df[date_col], df[h], label = h)
                             if legend == True:

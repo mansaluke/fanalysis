@@ -10,20 +10,21 @@ setup(name='fanalyasis',
       url = 'https://github.com/mansaluke/fanalysis',
       packages = find_packages(),
       include_package_data = True,
-      install_requires = ['matplotlib>=3.0.2'
-                          'numpy>=1.16.0'
-                          'pandas>= 0.24.0'
-                          'pydot>=1.4.1'
-                          'graphviz>=0.10.1'
-                          'numba>= 0.16.0'
-                          'quandl'
-                          'requests'
-                          'bs4'
-                          'scikit-learn'
-                          'ipykernel'
-                          'pydotplus'
-                          'tables>=3.5.2'
-                          'feather-format'
-                          'pyarrow'
+      install_requires = ['matplotlib>=3.0.2',
+                          'numpy>=1.16.0',
+                          'pandas>=0.24.0',
+                          'pydot>=1.4.1',
+                          'graphviz>=0.10.1',
+                          'numba>=0.16.0',
+                          'quandl',
+                          'requests',
+                          'bs4',
+                          'scikit-learn',
+                          'ipykernel',
+                          'pydotplus',
+                          'tables>=3.5.2',
+                          'feather-format',
+                          'Cython',
+                          'pyarrow',
                           'tqdm==4.32.1'],
 	  zip_safe=False)
