@@ -9,30 +9,48 @@ from datetime import datetime
 import pandas  as pd
 from calendar import monthrange
 import sys, os
-from utils import Ipython
 import pandas as pd
 import json
 import pickle
-try:
-    import feather
-except:
-    pass
+
+def try_import(module_names):
+
+    failed_imports = []
+
+    def import_module_fn(mod_in):
+        try:
+            import mod_in
+        except ImportError:
+            failed_imports.append(mod_in)
+
+    if isinstance(module_names, list):
+        for mod in module_names:
+            import_module_fn(mod)
+    else:
+        import_module_fn(module_names)
+
+    if failed_imports ==[]:
+        pass
+    else:
+        print('Unable to import ' + ', '.join(failed_imports))
+
+try_import(['feather', 'pyarrow.parquet as pq'])
 
 try:
-    import pyarrow.parquet as pq
+    from fanalysis.utils import Ipython
 except ImportError:
-    pass
-#from tqdm import tqdm
+    from utils import Ipython
+
 
 storagetypes = ["pickle", "json", "csv", "parquet", "feather", "h5"]
 storagetypes_dict = {"pickle": "", "json": "json", "csv": "csv", "parquet": "parquet", "feather": "feather", "HDF5": "h5" }
 
-from misc import Ipython
+
 if Ipython.run_from_ipython()==True:
     print('Ipython active')
-    standardpath='data'
+    standardpath='src\\fanalysis\\data'
 else:
-    standardpath = 'fanalysis\\data'
+    standardpath = 'src\\fanalysis\\data'
 
 class df_store:
     """
@@ -130,7 +148,11 @@ class df_store:
             fn = "self.dfto" + filetype + "(dataframe, filename)"
             print("Storing "+ filetype + ": " + filename + "...")
             
-            exec(fn)
+            try:
+                exec(fn)
+            except:
+                create_path(filename)
+                exec(fn)
             #tqdm slows down code considerably
             #for index in tqdm(dataframe.iterrows(), total=dataframe.shape[0]):
             #        pass
@@ -209,7 +231,6 @@ def mkdir_p(path):
 def create_path(path):
     if not os.path.exists(path):
         path = mkdir_p(path)
-        raise FileNotFoundError("file/directory not found. path has been created load cvs") 
     else:
         pass
     return path
@@ -269,17 +290,15 @@ def use_csvs(path = 'fanalysis\\data\\get_fx_data'):
 if __name__=='__main__':
 
     import generatedata as g
-    df = g.create_brownian_motion()
-    df = pd.DataFrame(df)  
-
-    filename = "bm.feather" 
-
-    f = df_store(filename).store_df(df)
-    print("filename: " + f)
-    print("load")
-    df = df_store(filename).load_df()
-    t = df_store(filename).filetype
-    print(df)
-    print(t)
+    #filename = 'pairs.csv'
     #df = df_store(filename).load_df()
+    #t = df_store(filename).filetype
+    #print(df.head())
+    #print(t)
+    #df = df_store(filename).load_df()
+    try:
+        df = df_store('pairs.csv', 'src', 'fanalysis', 'data').load_df()
+        print(df.head())
+    except:
+        pass
 

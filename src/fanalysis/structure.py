@@ -6,8 +6,11 @@ from calendar import monthrange
 from numba import jit
 import numpy as np
 import matplotlib.pyplot as plt
-from plotting import plots
 
+try:
+    from fanalysis.plotting import plots
+except ImportError:
+    from plotting import plots
 
 class outlier_detect():
     """
@@ -163,7 +166,6 @@ def date_split(df, datename = 'date', time=False, errors="raise"):
             raise ValueError("No time element to extract.")
             
     df['not_dupym'] = 1 - df[['Month', 'Year']].duplicated()
-    
     df_daysinmonth = df[df['not_dupym']==1].groupby(['Year', 'Month'], as_index=False)['Year', 'Month'] \
         .sum().apply(lambda row: monthrange(row['Year'].astype('int'), row['Month'].astype('int')) \
         , axis=1).str[1].reset_index().rename(columns={0:'daysinmonth'})

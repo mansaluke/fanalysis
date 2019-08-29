@@ -1,14 +1,18 @@
-from misc import Ipython
 import time
 import matplotlib
-from utils import Ipython
-if Ipython.run_from_ipython()!=True:
-    matplotlib.use('tkAgg')
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import numpy as np
-from sklearn.tree import export_graphviz
+
+try:
+    from fanalysis.utils import Ipython
+except ImportError:
+    from utils import Ipython
+
+if Ipython.run_from_ipython()!=True:
+    matplotlib.use('tkAgg')
 
 date_attr = ['date', 'Year', 'Month', 'Week', 'Day', 'Dayofweek', 'Dayofyear',
             'Is_month_end', 'Is_month_start', 'Is_quarter_end', 
@@ -24,8 +28,8 @@ class plots:
     --e.g. 1.   plots(df, None, 1) - can pass none into headers to plot all headers against date
     --e.g. 2.   plots.graph_vars(df, ['rnd'], 1) - can run function directly
     """ 
-    def __init__(self, df, header = None, p = 0.05, seperate=False, legend = False, point=None):
-        self.df, self.header, self.p, self.seperate, self.legend, self.point = df, header, p, seperate, legend, point
+    def __init__(self, df, header = None, fmt='.', p = 0.05, seperate=False, legend = False, point=None):
+        self.df, self.header, self.fmt, self.p, self.seperate, self.legend, self.point = df, header, p, fmt, seperate, legend, point
         self.date_col = self.df.select_dtypes(include=[np.datetime64]).columns[0]
         
         if self.header is None:
@@ -38,7 +42,7 @@ class plots:
         self.graph_vars(self.df, self.header, self.p, self.seperate, False, self.point)
 
     @staticmethod
-    def graph_vars(df, header = None, p = 0.05, seperate=False, legend=False, point=None):
+    def graph_vars(df, header = None, fmt='.', p = 0.05, seperate=False, legend=False, point=None):
         """
         Produces graphs looping through time series a.k.a headers
         insert headers as list
@@ -49,25 +53,33 @@ class plots:
         except:
             date_col = df.select_dtypes(include=[np.datetime64]).columns[0]
         
+        #set subplots
+        fig, ax = plt.subplots()
+
         if Ipython.run_from_ipython() is False:
             plt.rcParams['figure.figsize'] = (15, 5)
             try:
                 for h in header:
                     if h not in date_attr and h != date_col:
                         if point == None:
-                            plt.plot(df[date_col], df[h])
+                            #plt.plot(df[date_col], df[h], fmt)
+                            ax.plot(df[date_col], df[h], fmt, label = h)
                             plt.title([h])
-                            plt.xlabel('Date')
+                            ax_set.xlabel('Date')
                             plt.pause(p)
+                            fig.autofmt_xdate()
+                            ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
                             plt.show(block=False)
                             #time.sleep(0.5)
                             plt.close
                         else: 
-                            plt.plot(df[date_col], df[h], 'b')
-                            plt.plot(df.loc[point, date_col] , df.loc[point, h] , 'rD')
-                            plt.title([h])
+                            ax.plot(df[date_col], df[h], 'b')
+                            ax.plot(df.loc[point, date_col] , df.loc[point, h] , fmt)
+                            ax.set_title([h])
                             plt.xlabel('Date')
                             #plt.pause(p)
+                            fig.autofmt_xdate()
+                            ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
                             plt.show()
                             #time.sleep(0.5)
                             #plt.clf
@@ -81,40 +93,24 @@ class plots:
             if seperate is False:
                 for h in header:
                     if h not in date_attr and h != date_col:
-                        if point == None:
-                            plt.plot(df[date_col], df[h], label = h)
+                            #plt.plot(df[date_col], df[h], fmt, label = h)
+                            ax.plot(df[date_col], df[h], fmt, label = h)
+                            if point != None:
+                                ax.plot(df.loc[point, date_col] , df.loc[point, h] , fmt)
+                            fig.autofmt_xdate()
+                            ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
+                            plt.show()
+
                             if legend == True:
                                 plt.legend(loc = 'upper left')
-                        else:
-                            plt.plot(df[date_col], df[h], 'b')
-                            plt.plot(df.loc[point, date_col] , df.loc[point, h] , 'rD')
-                            plt.show()
+
             elif seperate is True:
                 for h in header:
                     if h not in date_attr:
-                        plt.plot(df[date_col], df[h]) 
-                        plt.title([h])
+                        ax.plot(df[date_col], header) 
+                        fig.autofmt_xdate()
+                        ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
                         plt.show()
-
-
-
-def draw_tree(tr, df_cols, size=10, ratio=0.6, precision=0, max_depth=3):
-    """ Draws a representation of a random forest in IPython.
-    Parameters:
-    -----------
-    t: The tree you wish to draw
-    df_cols: The data used to train the tree. This is used to get the names of the features.
-    """
-    from sklearn.tree import export_graphviz 
-    import pydotplus
-    import IPython.display
-    import graphviz
-    import re
-    s=export_graphviz(tr, max_depth=max_depth, out_file=None, feature_names=df_cols, filled=True, rounded = True,
-                      special_characters=True, rotate=True, precision=precision)
-    display(graphviz.Source(re.sub('Tree {',
-       f'Tree {{ size={size}; ratio={ratio}', s)))
-
 
 
        

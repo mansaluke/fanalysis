@@ -12,10 +12,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import forest
 from sklearn import metrics
 
-from fanalysis import structure as s
-import plotting
-from dfconvert import df_store
-
 
 
 def parallel_trees(rf, fn, n_jobs=4):
@@ -148,6 +144,22 @@ def dectree_max_depth(tree):
    root_node_id = 0
    return walk(root_node_id)
 
+def draw_tree(tr, df_cols, size=10, ratio=0.6, precision=0, max_depth=3):
+    """ Draws a representation of a random forest in IPython.
+    Parameters:
+    -----------
+    t: The tree you wish to draw
+    df_cols: The data used to train the tree. This is used to get the names of the features.
+    """
+    from sklearn.tree import export_graphviz 
+    import pydotplus
+    import IPython.display
+    import graphviz
+    import re
+    s=export_graphviz(tr, max_depth=max_depth, out_file=None, feature_names=df_cols, filled=True, rounded = True,
+                      special_characters=True, rotate=True, precision=precision)
+    display(graphviz.Source(re.sub('Tree {',
+       f'Tree {{ size={size}; ratio={ratio}', s)))
 
 
 
@@ -190,15 +202,15 @@ class do_rf():
       self.indep_col = indep_col
       self.available_date_cols = [x for x in \
          ['Year', 'Month', 'Day', 'Hour', 'Minute', 'Second'] if x in list(df.columns)]
-
+      self.date_col = self.df.select_dtypes(include=[np.datetime64]).columns[0]
 
       #define dataframes
-      self.features = self.feature_adjust_dataframe(self.df, self.indep_col)
+      self.features = self.feature_adjust_dataframe(self.df, self.indep_col, self.date_col)
       self.train_dependent, self.valid_dependent, self.train_independent, self.valid_independent = self.split_df()
       self.predictions = self.predict_out(False)
 
 
-   def feature_adjust_dataframe(self, df, indep_col):
+   def feature_adjust_dataframe(self, df, indep_col, date_col):
       """
       add mean, remove independent variable, apply pandas.get_dummies and fill null values with mean
       """
@@ -207,13 +219,13 @@ class do_rf():
       try:
          mean_col(features, indep_col)
       except:
-         print("Add mean col funcion has failed.")
+         print("Add mean col function has failed.")
          pass
 
       try:
-         to_drop = ['date', 'Bar OPEN Bid Quote', 'Bar HIGH Bid Quote', 'Bar LOW Bid Quote', 'Bar CLOSE Bid Quote']
-         to_drop.append(indep_col)
-         features = features.drop(indep_col, axis = 1) 
+         to_drop = \
+            ['Bar OPEN Bid Quote', 'Bar HIGH Bid Quote', 'Bar LOW Bid Quote', 'Bar CLOSE Bid Quote', indep_col, date_col]
+         #features = features.drop(indep_col, axis = 1) 
          features = drop_col(features, to_drop)
       except: 
          raise ValueError('Column: ', indep_col, ', could not be dropped from axis')
@@ -233,14 +245,20 @@ class do_rf():
       return features
 
    def split_df(self): 
-      return train_test_split(self.features, self.labels, test_size = self.valid_size, random_state=self.sample_random_state) 
+      indep_col = self.indep_col
+      prop = self.valid_size
+      #return train_test_split(self.features, self.labels, test_size = self.valid_size, random_state=self.sample_random_state) 
+      return self.features[:round(len(self.features) *(1-prop))], \
+         self.features[round(len(self.features) * (1-prop)):], \
+         self.labels[:round(len(self.features) *(1-prop))], \
+         self.labels[round(len(self.features) * (1-prop)):]
 
    @property
    def split_shape(self): 
       return self.train_dependent.shape, self.valid_dependent.shape, self.train_independent.shape, self.valid_independent.shape  
 
    def draw(self, size=10, ratio=0.6, precision=0, max_depth=3):
-      plotting.draw_tree(self.rf.estimators_[self.n_estimators-1], list(self.features.columns), size=size, ratio=ratio, precision=precision, max_depth=max_depth)
+      draw_tree(self.rf.estimators_[self.n_estimators-1], list(self.features.columns), size=size, ratio=ratio, precision=precision, max_depth=max_depth)
 
    def predict_out(self, graph = True):
       self.rf.fit(self.train_dependent, self.train_independent)
@@ -253,16 +271,35 @@ class do_rf():
 
    def graph_predictions(self):
 
+      test_dates =pd.to_datetime(self.train_dependent[self.available_date_cols])
       valid_dates =pd.to_datetime(self.valid_dependent[self.available_date_cols])
+      #maxd=valid_dates = max(df['Date'])
       #self.valid_dependent['prediction'] = self.predictions
-      prediction_data = pd.DataFrame(data = {'date': valid_dates, 'prediction': self.predictions})
+      fitted_data = pd.DataFrame(data = {self.date_col: test_dates, 'fit': self.rf.predict(self.train_dependent)})
+      prediction_data = pd.DataFrame(data = {self.date_col: valid_dates, 'prediction': self.predictions})
       fig, ax = plt.subplots()
-      ax.plot(self.df['date'], self.df[self.indep_col], 'b.', label = 'actual')
-      ax.plot(prediction_data['date'], prediction_data['prediction'], '.', label = 'prediction')
+      ax.plot(self.df[self.date_col], self.df[self.indep_col], 'b.', label = 'actual')
+      ax.plot(fitted_data[self.date_col], fitted_data['fit'], 'r.', label = 'fit')
+      ax.plot(prediction_data[self.date_col], prediction_data['prediction'], 'g.', label = 'prediction')
       fig.autofmt_xdate()
       ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
-      ax.set_title('Actual and Predicted Values'); plt.xlabel('Date'); plt.ylabel('rate')
+      ax.set_title('Actual and Predicted Values'); plt.xlabel(self.date_col); plt.ylabel('rate')
       plt.show()
+
+   def out_of_sample_pred(self, sample_to_predict, graph =True):
+
+      sample_to_predict_dates =pd.to_datetime(sample_to_predict[self.date_col])
+      sample_to_predict = sample_to_predict.loc[:, sample_to_predict.columns != self.date_col]
+      fitted_data = pd.DataFrame(data = {self.date_col: sample_to_predict_dates, 'oos_pred': self.rf.predict(sample_to_predict)})
+
+      if graph == True:
+         fig, ax = plt.subplots()
+         ax.plot(fitted_data[self.date_col], fitted_data['oos_pred'], 'r.', label = 'fit')
+         fig.autofmt_xdate()
+         ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
+         ax.set_title('Out of sample pred'); plt.xlabel(self.date_col); plt.ylabel('rate')
+         plt.show()
+      return fitted_data
 
    def error_calc(self, predictions, label_sample):
       return abs(predictions - label_sample)
@@ -296,11 +333,12 @@ class do_rf():
       def get_preds(t): return t.predict(self.valid_dependent)
       
       t_preds = np.stack(parallel_trees(self.rf, get_preds, n_jobs))
-
+      all_preds = [metrics.r2_score(self.valid_independent, np.mean(t_preds[:i+1], axis=0)) for i in range(self.n_estimators)]
+      
       if graph ==True:
-         plt.plot([metrics.r2_score(self.valid_independent, np.mean(t_preds[:i+1], axis=0)) for i in range(self.n_estimators)])
-
-      return t_preds
+         plt.plot(all_preds)
+      #return t_preds
+      return all_preds
 
    def importances(self, graph = True):
 
@@ -337,21 +375,30 @@ class do_rf():
 
 
 if __name__ == "__main__":
-   pass
-   #df = df_store('EURUSD_tick_historicals_aug.h5').load_df()
-#
-   #df = df.sample(n=5000)
-   #def drop_col(df, col_names):
-   #    for col in col_names:
-   #        if col in df.columns:
-   #            df = df.drop(col, axis = 1)
-   #    return df
-#
-   #df = drop_col(df, ['aggdays', 'daysinmonth', 'Bar OPEN Bid Quote_lag-1'])
-   #print(df.head())
-   #rf = do_rf(df, n_estimators=5)
-   #rf.predict_out(True)
-   #rf.return_error_details()
-   #rf.print_score()
-   #rf.importances()
-   #rf.tree_preds()
+   import sys, os
+   parentdir = os.path.abspath(os.path.join(os.path.dirname(__file__)+ '/../../'))
+   if parentdir not in sys.path:
+      sys.path.insert(0, parentdir)
+   import structure as s
+   from dfconvert import df_store
+   df = df_store('EURUSD_tick_historicals_aug.h5').load_df()
+
+   df = df.sample(n=50000)
+   def drop_col(df, col_names):
+       for col in col_names:
+           if col in df.columns:
+               df = df.drop(col, axis = 1)
+       return df
+   df = df.reset_index()
+   df = s.date_split(df)
+   df = drop_col(df, ['aggdays', 'daysinmonth', 'Bar OPEN Bid Quote_lag-1'])
+   print(df.head())
+   rf = do_rf(df, 'EURUSD.bid', n_estimators=5)
+   print(rf.available_date_cols)
+   print(1)
+   rf.predict_out(True)
+   print(2)
+   rf.return_error_details()
+   rf.print_score()
+   rf.importances()
+   rf.tree_preds()
