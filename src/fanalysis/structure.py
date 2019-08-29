@@ -133,7 +133,7 @@ def add_rand(df):
 
 
 
-def date_split(df, datename = 'date', time=False, errors="raise"):
+def date_split(df, datename = None, time=False, errors="raise"):
     """
     Extracts date elements from pandas df:
     --year, month, week, day, hour, daysinmonth, aggdays etc
@@ -142,6 +142,9 @@ def date_split(df, datename = 'date', time=False, errors="raise"):
     the other date elements are standard pandas date parts
     df = datesplit(df, time= True)
     """
+    if datename==None:
+        datename = df.select_dtypes(include=[np.datetime64]).columns[0]
+
     datecol = df[datename]
 
     datecol_dtype = datecol.dtype

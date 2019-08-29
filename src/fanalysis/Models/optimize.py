@@ -2,12 +2,19 @@
 import pandas as pd
 import numpy as np
 
+import sys
+try:
+    sys.path.append('fanalysis')
+    sys.path.append('fanalysis/Models')
+except:
+    pass
+
 try:
     import Random_Forest as r
     from Random_Forest import do_rf
 except ImportError:
-    import fanalysis.Models.Random_Forest as r
-    from fanalysis.Models.Random_Forest import do_rf
+    import Models.Random_Forest as r
+    from Models.Random_Forest import do_rf
 
 class optimize_rf(do_rf):
     def __init__(self,
@@ -62,8 +69,13 @@ class optimize_rf(do_rf):
 
 
 if __name__ == "__main__":
-    
-    df = dfc.df_store('EURUSD_tick_sample.h5', pathname, 'data').load_df()
+    import sys, os
+    parentdir = os.path.abspath(os.path.join(os.path.dirname(__file__)+ '../..'))
+    if parentdir not in sys.path:
+       sys.path.insert(0, parentdir)
+    import structure as s
+    import dfconvert as dfc
+    df = dfc.df_store('EURUSD_tick_sample.h5').load_df()
     
     def test_split_df(df, prop = 0.25):
         df.sort_values(by=['Date'], inplace=True)

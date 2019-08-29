@@ -13,33 +13,16 @@ import pandas as pd
 import json
 import pickle
 
-def try_import(module_names):
-
-    failed_imports = []
-
-    def import_module_fn(mod_in):
-        try:
-            import mod_in
-        except ImportError:
-            failed_imports.append(mod_in)
-
-    if isinstance(module_names, list):
-        for mod in module_names:
-            import_module_fn(mod)
-    else:
-        import_module_fn(module_names)
-
-    if failed_imports ==[]:
-        pass
-    else:
-        print('Unable to import ' + ', '.join(failed_imports))
-
-try_import(['feather', 'pyarrow.parquet as pq'])
-
 try:
     from fanalysis.utils import Ipython
+    import fanalysis.utils
 except ImportError:
     from utils import Ipython
+    import utils
+
+utils.try_import(['feather', 'pyarrow.parquet as pq'])
+
+
 
 
 storagetypes = ["pickle", "json", "csv", "parquet", "feather", "h5"]
@@ -48,9 +31,9 @@ storagetypes_dict = {"pickle": "", "json": "json", "csv": "csv", "parquet": "par
 
 if Ipython.run_from_ipython()==True:
     print('Ipython active')
-    standardpath='src\\fanalysis\\data'
+    standardpath='data'
 else:
-    standardpath = 'src\\fanalysis\\data'
+    standardpath = 'data'
 
 class df_store:
     """

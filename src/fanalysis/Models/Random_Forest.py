@@ -376,13 +376,13 @@ class do_rf():
 
 if __name__ == "__main__":
    import sys, os
-   parentdir = os.path.abspath(os.path.join(os.path.dirname(__file__)+ '/../../'))
+   parentdir = os.path.abspath(os.path.join(os.path.dirname(__file__)+ '../..'))
    if parentdir not in sys.path:
       sys.path.insert(0, parentdir)
    import structure as s
    from dfconvert import df_store
    df = df_store('EURUSD_tick_historicals_aug.h5').load_df()
-
+   
    df = df.sample(n=50000)
    def drop_col(df, col_names):
        for col in col_names:
@@ -390,6 +390,7 @@ if __name__ == "__main__":
                df = df.drop(col, axis = 1)
        return df
    df = df.reset_index()
+   print(df.head())
    df = s.date_split(df)
    df = drop_col(df, ['aggdays', 'daysinmonth', 'Bar OPEN Bid Quote_lag-1'])
    print(df.head())
