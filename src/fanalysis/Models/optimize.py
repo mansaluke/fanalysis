@@ -10,11 +10,11 @@ except:
     pass
 
 try:
-    import Random_Forest as r
-    from Random_Forest import do_rf
-except ImportError:
     import Models.Random_Forest as r
     from Models.Random_Forest import do_rf
+except ImportError:
+    import fanalysis.Models.Random_Forest as r
+    from fanalysis.Models.Random_Forest import do_rf
 
 class optimize_rf(do_rf):
     def __init__(self,
@@ -69,28 +69,29 @@ class optimize_rf(do_rf):
 
 
 if __name__ == "__main__":
-    import sys, os
-    parentdir = os.path.abspath(os.path.join(os.path.dirname(__file__)+ '../..'))
-    if parentdir not in sys.path:
-       sys.path.insert(0, parentdir)
-    import structure as s
-    import dfconvert as dfc
-    df = dfc.df_store('EURUSD_tick_sample.h5').load_df()
-    
-    def test_split_df(df, prop = 0.25):
-        df.sort_values(by=['Date'], inplace=True)
-        return df[:round(len(df) *(1-prop))], df[round(len(df) * (1-prop)):]
-    
-    df, test = test_split_df(df)
-
-
-    orf =  optimize_rf(df, n_estimators=100, indep_col = 'EURUSD.bid' )        
-    opt_n_estimators = orf.opt_n_estimators
-    rf = r.do_rf(df, n_estimators=opt_n_estimators, indep_col = 'EURUSD.bid')
-    rf.predict_out(True)
-    rf.return_error_details()
-    rf.print_score()
-    rf.importances()
-    oosp = rf.out_of_sample_pred(test)
-
+    pass
+    #import sys, os
+    #parentdir = os.path.abspath(os.path.join(os.path.dirname(__file__)+ '../..'))
+    #if parentdir not in sys.path:
+    #   sys.path.insert(0, parentdir)
+    #import structure as s
+    #import dfconvert as dfc
+    #df = dfc.df_store('EURUSD_tick_sample.h5').load_df()
+    #
+    #def test_split_df(df, prop = 0.25):
+    #    df.sort_values(by=['Date'], inplace=True)
+    #    return df[:round(len(df) *(1-prop))], df[round(len(df) * (1-prop)):]
+    #
+    #df, test = test_split_df(df)
+#
+#
+    #orf =  optimize_rf(df, n_estimators=100, indep_col = 'EURUSD.bid' )        
+    #opt_n_estimators = orf.opt_n_estimators
+    #rf = r.do_rf(df, n_estimators=opt_n_estimators, indep_col = 'EURUSD.bid')
+    #rf.predict_out(True)
+    #rf.return_error_details()
+    #rf.print_score()
+    #rf.importances()
+    #oosp = rf.out_of_sample_pred(test)
+#
 

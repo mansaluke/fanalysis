@@ -5,9 +5,9 @@ try:
     from Models.Random_Forest import do_rf
     import Download.downloadhistoricals as dh
 except ImportError:
-    from fanalysis.Models.optimize import optimize_rf
-    from fanalysis.Models.Random_Forest import do_rf
-    import Download.downloadhistoricals as dh
+    from optimize import optimize_rf
+    from Random_Forest import do_rf
+    import downloadhistoricals as dh
 
 import dfconvert as dfc
 from datetime import datetime, timedelta
