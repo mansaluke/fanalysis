@@ -44,19 +44,24 @@ class data:
     
     
     '''
-    def __init__(self, starting_period, frequency):
+    def __init__(self, num_periods, frequency, direction = 'Backwards'):
 
-        self.p, self.f = starting_period, frequency
+        self.num_periods, self.freq, self.direction = num_periods, frequency, direction
 
-        self.dates = DataFrame(self.gendateseries(), columns = ['Date'])
+        self.dates = self.gendateseries()
         self.length = len(self.dates)
 
     def gendateseries(self):
         try:
-            dates = pd.date_range(end=datetime.now(), periods=self.p, freq=self.f)
+            if self.direction == 'Backwards' or self.direction == 1:
+                dates = pd.date_range(end=datetime.now(), periods=self.num_periods, freq=self.freq)
+            elif self.direction == 'Forwards' or self.direction == -1:
+                dates = pd.date_range(start=datetime.now(), periods=self.num_periods, freq=self.freq)
+            else:
+                raise ValueError("Direction not recognised")
         except:
             raise ValueError("Cannot generate that many periods.")
-        return dates
+        return DataFrame(dates, columns = ['Date'])
 
     def genuniformseries(self, low =0, high = 1 ):
 

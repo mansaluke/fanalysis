@@ -15,12 +15,12 @@ import pickle
 
 try:
     from fanalysis.utils import Ipython
-    import fanalysis.utils
+    import fanalysis.utils as u
 except ImportError:
     from utils import Ipython
-    import utils
+    import utils as u
 
-utils.try_import(['feather', 'pyarrow.parquet as pq'])
+u.try_import(['feather', 'pyarrow.parquet as pq'])
 
 
 

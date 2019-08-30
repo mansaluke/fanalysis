@@ -5,8 +5,10 @@
 #session = blpapi.Session(options)
 #session.start()
 
-
-from findatapy.market import MarketDataGenerator, Market, MarketDataRequest
+try:
+    from findatapy.market import MarketDataGenerator, Market, MarketDataRequest
+except ImportError:
+    from fanalysis.findatapy.market import MarketDataGenerator, Market, MarketDataRequest
 #from dfconvert import df_store
 
 def generate_market_data_for_tests(start_date, finish_date):
@@ -43,5 +45,6 @@ def generate_market_data_for_tests(start_date, finish_date):
 
 
 if __name__ == "__main__":
-    generate_market_data_for_tests(start_date='08 Jan 2019', finish_date='07 Aug 2019')
+    pass
+    #generate_market_data_for_tests(start_date='08 Jan 2019', finish_date='07 Aug 2019')
 
