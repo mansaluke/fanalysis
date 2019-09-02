@@ -20,9 +20,37 @@ except ImportError:
     from utils import Ipython
     import utils as u
 
-u.try_import(['feather', 'pyarrow.parquet as pq'])
 
 
+    
+def try_import(module_names):
+
+    import importlib
+
+    failed_imports = []
+
+    def import_module_fn(mod_in):
+        try:
+            #import mod_in
+            mod_in = importlib.import_module(mod_in)
+        except ImportError:
+            failed_imports.append(mod_in)
+
+    if isinstance(module_names, list):
+        for mod in module_names:
+            import_module_fn(mod)
+    else:
+        import_module_fn(module_names)
+
+    if failed_imports ==[]:
+        pass
+    else:
+        print('Unable to import ' + ', '.join(failed_imports))
+
+
+#try_import(['feather', 'pyarrow.parquet'])
+
+import feather
 
 
 storagetypes = ["pickle", "json", "csv", "parquet", "feather", "h5"]
@@ -60,6 +88,7 @@ class df_store:
         filetype = self.filetype   
 
         if self.check_file_exists(filename) == False:
+            mkdir_p(os.path.dirname(filename))
             print('path: ' + filename  )
             raise FileExistsError('File does not exist')
 
@@ -101,7 +130,7 @@ class df_store:
         return df
     
     def parquet_load(self, pfile):
-        table = pq.read_table(pfile)
+        table = pyarrow.parquet.read_table(pfile)
         df = table.to_pandas()
         return df
     
@@ -111,7 +140,12 @@ class df_store:
         return df
     
     def h5_load(self, hdffile):
-        df = pd.read_hdf(hdffile, 'df')
+        try:
+            df = pd.read_hdf(hdffile, 'df')
+        except:
+            import h5py
+            df = h5py.File(filename, 'r')
+            print("file loaded as {}".format(type(df)))
         return df
 
 
@@ -134,7 +168,7 @@ class df_store:
             try:
                 exec(fn)
             except:
-                create_path(filename)
+                create_path(os.dirname(filename))
                 exec(fn)
             #tqdm slows down code considerably
             #for index in tqdm(dataframe.iterrows(), total=dataframe.shape[0]):
@@ -186,7 +220,7 @@ class df_store:
         """
         dataframe.to_parquet(filename,compression='gzip')
         #table = pd.Table.from_pandas(dataframe, preserve_index=True)
-        #pq.write_table(table, filename)
+        #pyarrow.parquet.write_table(table, filename)
         print("dataframe successfully loaded to parquet")
 
     def dftofeather(self, dataframe, filename):

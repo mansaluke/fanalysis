@@ -196,7 +196,7 @@ class do_rf():
       #define variables
       self.df = df
       self.n_estimators = n_estimators
-      self.labels = df[indep_col]                 
+      self.labels = self.df[indep_col]                 
       self.valid_size = valid_size
       self.sample_random_state = sample_random_state
       self.indep_col = indep_col
@@ -207,42 +207,42 @@ class do_rf():
       #define dataframes
       self.features = self.feature_adjust_dataframe(self.df, self.indep_col, self.date_col)
       self.train_dependent, self.valid_dependent, self.train_independent, self.valid_independent = self.split_df()
-      self.predictions = self.predict_out(False)
+      #self.predictions = self.predict_out(False)
 
 
    def feature_adjust_dataframe(self, df, indep_col, date_col):
       """
       add mean, remove independent variable, apply pandas.get_dummies and fill null values with mean
       """
-      features = self.df
+      df = self.df
 
-      try:
-         mean_col(features, indep_col)
-      except:
-         print("Add mean col function has failed.")
-         pass
+      #try:
+      #   mean_col(features, indep_col)
+      #except:
+      #   print("Add mean col function has failed.")
+      #   pass
 
       try:
          to_drop = \
             ['Bar OPEN Bid Quote', 'Bar HIGH Bid Quote', 'Bar LOW Bid Quote', 'Bar CLOSE Bid Quote', indep_col, date_col]
          #features = features.drop(indep_col, axis = 1) 
-         features = drop_col(features, to_drop)
+         df = drop_col(df, to_drop)
       except: 
          raise ValueError('Column: ', indep_col, ', could not be dropped from axis')
 
       try:
-         features = pd.get_dummies(features)
+         df = pd.get_dummies(df)
       except:
          print('pandas get_dummies function has failed.')
          pass  
       
-      for col in features: 
+      for col in df: 
          try:
-            r.fix_missing(features, features[col], col, {})
+            r.fix_missing(df, df[col], col, {})
          except:
             pass
 
-      return features
+      return df
 
    def split_df(self): 
       indep_col = self.indep_col
@@ -263,7 +263,6 @@ class do_rf():
    def predict_out(self, graph = True):
       self.rf.fit(self.train_dependent, self.train_independent)
       self.predictions = self.rf.predict(self.valid_dependent)
-
       if graph == True:
          self.graph_predictions()
       
@@ -290,6 +289,7 @@ class do_rf():
 
       sample_to_predict_dates =pd.to_datetime(sample_to_predict[self.date_col])
       sample_to_predict = sample_to_predict.loc[:, sample_to_predict.columns != self.date_col]
+      print(sample_to_predict.columns)
       fitted_data = pd.DataFrame(data = {self.date_col: sample_to_predict_dates, 'oos_pred': self.rf.predict(sample_to_predict)})
 
       if graph == True:
@@ -306,7 +306,7 @@ class do_rf():
 
    def return_error_details(self, to_return = 'mean'):
 
-      baseline_errors = self.error_calc(self.features['mean'], self.valid_independent)
+      baseline_errors = self.error_calc(self.features.loc[:,self.indep_col].mean(), self.valid_independent)
       rfprediction_errors = self.error_calc(self.predictions, self.valid_independent)
       mean_baseline_error = np.mean(baseline_errors)
       mean_rfprediction_error = np.mean(rfprediction_errors)

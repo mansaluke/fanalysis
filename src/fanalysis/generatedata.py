@@ -9,7 +9,7 @@ from pandas import DataFrame
 
 class data:
     '''create data
-    e.g. df = data(100, "S").genseries()
+    e.g. df = data(100, "S").genuniformseries()
 
 
     pandas freq options:
@@ -44,18 +44,19 @@ class data:
     
     
     '''
-    def __init__(self, num_periods, frequency, direction = 'Backwards'):
+    def __init__(self, num_periods, frequency, direction = 'Backward'):
 
         self.num_periods, self.freq, self.direction = num_periods, frequency, direction
 
         self.dates = self.gendateseries()
         self.length = len(self.dates)
 
+
     def gendateseries(self):
         try:
-            if self.direction == 'Backwards' or self.direction == 1:
+            if self.direction == 'Backward' or self.direction == 1:
                 dates = pd.date_range(end=datetime.now(), periods=self.num_periods, freq=self.freq)
-            elif self.direction == 'Forwards' or self.direction == -1:
+            elif self.direction == 'Forward' or self.direction == -1:
                 dates = pd.date_range(start=datetime.now(), periods=self.num_periods, freq=self.freq)
             else:
                 raise ValueError("Direction not recognised")

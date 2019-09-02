@@ -9,7 +9,7 @@ try:
     from findatapy.market import MarketDataGenerator, Market, MarketDataRequest
 except ImportError:
     from fanalysis.findatapy.market import MarketDataGenerator, Market, MarketDataRequest
-#from dfconvert import df_store
+import pandas as pd
 
 def generate_market_data_for_tests(start_date, finish_date):
 
@@ -33,18 +33,52 @@ def generate_market_data_for_tests(start_date, finish_date):
 
 
     market = Market(market_data_generator=MarketDataGenerator())
-    df = market.fetch_market(md_request)
-    print(df.head())
-    #try:
-    #    df_store('EURUSD_tick_historicals_2019.h5').store_df(df)
-    #except:
-    #    df_store('EURUSD_tick_historicals.feather').store_df(df)
-    ##df.to_hdf5("fanalysis\\data\\EURUSD_tick.h5")
-    #print(4)
-    return df
+    try:
+        df = market.fetch_market(md_request)
+        return df
+    except:
+        return None
 
 
 if __name__ == "__main__":
-    pass
-    #generate_market_data_for_tests(start_date='08 Jan 2019', finish_date='07 Aug 2019')
+
+    #df = generate_market_data_for_tests(start_date='01 Jan 2019', finish_date='29 Aug 2019')
+#
+    import sys, os
+    parentdir = os.path.abspath(os.path.join(os.path.dirname(__file__)+ '../..'))
+    if parentdir not in sys.path:
+       sys.path.insert(0, parentdir)
+
+    from dfconvert import df_store
+    import structure as s
+    #df = pd.read_hdf('C:/Users/luke/Documents/Python Scripts/fanalysis/data/EURUSD_tick_historicals_2019.h5', 'df')
+    #try:
+    #    df_store('EURUSD_tick_historicals_2019.h5').store_df(df)
+    #    df_store('EURUSD_tick_historicals_2019.feather').store_df(df)
+    #except:
+    #    pass
+        #
+    df = df_store('EURUSD_tick_historicals_2019.h5').load_df()
+    print(df.head())
+    df = df.reset_index()
+    df = s.date_split(df)
+    #try:
+    #    df.memory_use()
+    #except:
+    #    pass
+    try:
+        df_store('EURUSD_tick_historicals.h5').store_df(df)
+        df_store('EURUSD_tick_historicals.feather').store_df(df)
+        print(2)
+    except:
+        df_store('EURUSD_tick_historicals.feather').store_df(df)
+        print(3)
+    #df_store('EURUSD_tick_historicals_2019.feather').store_df(df)
+    #print(1)
+    #df_store('EURUSD_tick_historicals.h5').store_df(df)
+
+    df = df_store('EURUSD_tick_historicals_2019.h5').load_df()
+    print(df.head())
+    print(1)
+
 
