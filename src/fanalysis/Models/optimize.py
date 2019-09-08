@@ -62,6 +62,7 @@ class optimize_rf(do_rf):
 
     @property
     def opt_n_estimators(self):
+        self.predict_out(False) #initialise rf
         preds = self.tree_preds(graph=False)
         optimal  = pd.DataFrame(preds)[preds == max(preds)].reset_index()
         return min(optimal['index']) #optimal n_estimators
@@ -76,22 +77,23 @@ if __name__ == "__main__":
     #   sys.path.insert(0, parentdir)
     #import structure as s
     #import dfconvert as dfc
-    #df = dfc.df_store('EURUSD_tick_sample.h5').load_df()
-    #
+    #df = dfc.df_store('data.h5').load_df()
+    #df = df.sample(n=100000)
+#
     #def test_split_df(df, prop = 0.25):
-    #    df.sort_values(by=['Date'], inplace=True)
+    #    df.sort_values(by=['date'], inplace=True)
     #    return df[:round(len(df) *(1-prop))], df[round(len(df) * (1-prop)):]
     #
     #df, test = test_split_df(df)
 #
 #
-    #orf =  optimize_rf(df, n_estimators=100, indep_col = 'EURUSD.bid' )        
+    #orf =  optimize_rf(df, n_estimators=100, indep_col = 'd1' )        
     #opt_n_estimators = orf.opt_n_estimators
-    #rf = r.do_rf(df, n_estimators=opt_n_estimators, indep_col = 'EURUSD.bid')
+    #rf = r.do_rf(df, n_estimators=opt_n_estimators, indep_col = 'd1')
     #rf.predict_out(True)
     #rf.return_error_details()
     #rf.print_score()
     #rf.importances()
     #oosp = rf.out_of_sample_pred(test)
-#
+
 

@@ -50,16 +50,17 @@ def try_import(module_names):
 
 #try_import(['feather', 'pyarrow.parquet'])
 
-import feather
-
+#import feather
+#import pyarrow.parquet
 
 storagetypes = ["pickle", "json", "csv", "parquet", "feather", "h5"]
 storagetypes_dict = {"pickle": "", "json": "json", "csv": "csv", "parquet": "parquet", "feather": "feather", "HDF5": "h5" }
 
 
+
 if Ipython.run_from_ipython()==True:
     print('Ipython active')
-    standardpath='data'
+    standardpath='fanalysis\data'
 else:
     standardpath = 'data'
 
@@ -96,18 +97,18 @@ class df_store:
             fn = "self." + filetype + "_load(filename)"
             print("Loading "+ filetype + ": " + filename + "...")
 
-            try:
-                dataframe = eval(fn)
-                #tqdm slows down code considerably
-                #for index in tqdm(dataframe.iterrows(), total=dataframe.shape[0]):
-                #    pass
+            #try:
+            dataframe = eval(fn)
+            #tqdm slows down code considerably
+            #for index in tqdm(dataframe.iterrows(), total=dataframe.shape[0]):
+            #    pass
 
 
-                if dataframe is not None:
-                    print("dataframe loaded successfully")
+            if dataframe is not None:
+                print("dataframe loaded successfully")
 
-            except:
-                raise OSError("could not load "+filetype+". Check file exists - file may be too large.")
+            #except:
+            #    raise OSError("could not load "+filetype+". Check file exists - file may be too large.")
             return dataframe
         else:
             raise ValueError("Cannot load that file type. Please check file name and try again.")                          
@@ -144,7 +145,7 @@ class df_store:
             df = pd.read_hdf(hdffile, 'df')
         except:
             import h5py
-            df = h5py.File(filename, 'r')
+            df = h5py.File(hdffile, 'r')
             print("file loaded as {}".format(type(df)))
         return df
 
@@ -168,7 +169,7 @@ class df_store:
             try:
                 exec(fn)
             except:
-                create_path(os.dirname(filename))
+                #create_path(os.dirname(filename))
                 exec(fn)
             #tqdm slows down code considerably
             #for index in tqdm(dataframe.iterrows(), total=dataframe.shape[0]):
@@ -299,6 +300,10 @@ def use_csvs(path = 'fanalysis\\data\\get_fx_data'):
     return df
 
 
+def get_path():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    print(dir_path)
+    return dir_path
 
 
 

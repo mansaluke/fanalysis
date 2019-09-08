@@ -7,9 +7,12 @@ from pandas import DataFrame
 
 
 
-class data:
+class create_data:
     '''create data
-    e.g. df = data(100, "S").genuniformseries()
+    e.g.
+    s = pd.to_datetime('01-01-2019')
+    create_data('S', date = [s, datetime.now()]).gendateseries()
+    create_data('S', date = datetime.now(), direction='Backwards').create_brownian_motion()
 
 
     pandas freq options:
@@ -44,25 +47,35 @@ class data:
     
     
     '''
-    def __init__(self, num_periods, frequency, direction = 'Backward'):
+    def __init__(self, frequency, date = datetime.now(), num_periods=100, direction=None):
 
-        self.num_periods, self.freq, self.direction = num_periods, frequency, direction
+        self.freq = frequency
+        self.date = date
+        self.num_periods = num_periods
+        self.direction = direction
 
+        if isinstance(date, list):
+            self.start=date[0]
+            self.end=date[1]
+        
         self.dates = self.gendateseries()
         self.length = len(self.dates)
 
 
     def gendateseries(self):
+        
         try:
-            if self.direction == 'Backward' or self.direction == 1:
-                dates = pd.date_range(end=datetime.now(), periods=self.num_periods, freq=self.freq)
-            elif self.direction == 'Forward' or self.direction == -1:
-                dates = pd.date_range(start=datetime.now(), periods=self.num_periods, freq=self.freq)
-            else:
-                raise ValueError("Direction not recognised")
+            dates = pd.date_range(start = self.start, end=self.end, freq=self.freq)
         except:
-            raise ValueError("Cannot generate that many periods.")
+            if self.direction == 'Backwards' or self.direction == 1:
+                dates = pd.date_range(end=self.date, periods=self.num_periods, freq=self.freq)
+            elif self.direction == 'Forwards' or self.direction == -1:
+                dates = pd.date_range(start=self.date, periods=self.num_periods, freq=self.freq)         
+        #else:
+        #    raise AttributeError
         return DataFrame(dates, columns = ['Date'])
+        
+
 
     def genuniformseries(self, low =0, high = 1 ):
 
@@ -97,8 +110,13 @@ class data:
 
 
 if __name__ == '__main__':
-    import plotting as p
-    df = data(100, "d").create_brownian_motion()
-    print(df.head())
-    p.plots(df)
+
+    s = pd.to_datetime('01-01-2019')
+    #print(pd.date_range(start = s, end=datetime.now(), freq='S'))
+    #print(create_data('S', date = [s, datetime.now()]).gendateseries())
+    #print(create_data('S', date = datetime.now(), direction='Backwards').create_brownian_motion())
     
+    #import plotting as p
+    #print(df.head())
+    #p.plots(df)
+

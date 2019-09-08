@@ -201,51 +201,32 @@ class do_rf():
       self.sample_random_state = sample_random_state
       self.indep_col = indep_col
       self.available_date_cols = [x for x in \
-         ['Year', 'Month', 'Day', 'Hour', 'Minute', 'Second'] if x in list(df.columns)]
+         ['Year', 'Month', 'Day', 'Hour', 'Minute', 'Second'] if x in list(self.df.columns)]
       self.date_col = self.df.select_dtypes(include=[np.datetime64]).columns[0]
 
       #define dataframes
-      self.features = self.feature_adjust_dataframe(self.df, self.indep_col, self.date_col)
+      self.features = drop_col(self.feature_adjust_dataframe(self.df), [self.date_col, self.indep_col])
       self.train_dependent, self.valid_dependent, self.train_independent, self.valid_independent = self.split_df()
-      #self.predictions = self.predict_out(False)
 
-
-   def feature_adjust_dataframe(self, df, indep_col, date_col):
+   def feature_adjust_dataframe(self, df):
       """
       add mean, remove independent variable, apply pandas.get_dummies and fill null values with mean
       """
-      df = self.df
-
-      #try:
-      #   mean_col(features, indep_col)
-      #except:
-      #   print("Add mean col function has failed.")
-      #   pass
-
       try:
-         to_drop = \
-            ['Bar OPEN Bid Quote', 'Bar HIGH Bid Quote', 'Bar LOW Bid Quote', 'Bar CLOSE Bid Quote', indep_col, date_col]
-         #features = features.drop(indep_col, axis = 1) 
-         df = drop_col(df, to_drop)
-      except: 
-         raise ValueError('Column: ', indep_col, ', could not be dropped from axis')
-
-      try:
-         df = pd.get_dummies(df)
+         self.df = pd.get_dummies(self.df)
       except:
          print('pandas get_dummies function has failed.')
          pass  
       
-      for col in df: 
+      for col in self.df: 
          try:
-            r.fix_missing(df, df[col], col, {})
+            r.fix_missing(self.df, self.df[col], col, {})
          except:
             pass
 
-      return df
+      return self.df
 
    def split_df(self): 
-      indep_col = self.indep_col
       prop = self.valid_size
       #return train_test_split(self.features, self.labels, test_size = self.valid_size, random_state=self.sample_random_state) 
       return self.features[:round(len(self.features) *(1-prop))], \
@@ -285,19 +266,18 @@ class do_rf():
       ax.set_title('Actual and Predicted Values'); plt.xlabel(self.date_col); plt.ylabel('rate')
       plt.show()
 
-   def out_of_sample_pred(self, sample_to_predict, graph =True):
+   def out_of_sample_pred(self, sample_to_predict, graph =True, date_col = 'Date'):
 
-      sample_to_predict_dates =pd.to_datetime(sample_to_predict[self.date_col])
-      sample_to_predict = sample_to_predict.loc[:, sample_to_predict.columns != self.date_col]
-      print(sample_to_predict.columns)
-      fitted_data = pd.DataFrame(data = {self.date_col: sample_to_predict_dates, 'oos_pred': self.rf.predict(sample_to_predict)})
+      sample_to_predict_dates =pd.to_datetime(sample_to_predict[date_col])
+      sample_to_predict = sample_to_predict.loc[:, sample_to_predict.columns != date_col]
+      fitted_data = pd.DataFrame(data = {date_col: sample_to_predict_dates, 'oos_pred': self.rf.predict(sample_to_predict)})
 
       if graph == True:
          fig, ax = plt.subplots()
-         ax.plot(fitted_data[self.date_col], fitted_data['oos_pred'], 'r.', label = 'fit')
+         ax.plot(fitted_data[date_col], fitted_data['oos_pred'], 'r.', label = 'fit')
          fig.autofmt_xdate()
          ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
-         ax.set_title('Out of sample pred'); plt.xlabel(self.date_col); plt.ylabel('rate')
+         ax.set_title('Out of sample pred'); plt.xlabel(date_col); plt.ylabel('rate')
          plt.show()
       return fitted_data
 
@@ -306,7 +286,7 @@ class do_rf():
 
    def return_error_details(self, to_return = 'mean'):
 
-      baseline_errors = self.error_calc(self.features.loc[:,self.indep_col].mean(), self.valid_independent)
+      baseline_errors = self.error_calc(self.df.loc[:,self.indep_col].mean(), self.valid_independent)
       rfprediction_errors = self.error_calc(self.predictions, self.valid_independent)
       mean_baseline_error = np.mean(baseline_errors)
       mean_rfprediction_error = np.mean(rfprediction_errors)
@@ -331,7 +311,7 @@ class do_rf():
       """ get predictions of each tree
       """
       def get_preds(t): return t.predict(self.valid_dependent)
-      
+
       t_preds = np.stack(parallel_trees(self.rf, get_preds, n_jobs))
       all_preds = [metrics.r2_score(self.valid_independent, np.mean(t_preds[:i+1], axis=0)) for i in range(self.n_estimators)]
       
@@ -353,6 +333,7 @@ class do_rf():
          plt.bar(x_values, importances, orientation='vertical')
          plt.xticks(x_values, list(self.features.columns), rotation='vertical')
          plt.ylabel('Importance');plt.xlabel('Variable');plt.title('var importance')
+         plt.show()
 
       return feature_importances
 
@@ -381,25 +362,17 @@ if __name__ == "__main__":
       sys.path.insert(0, parentdir)
    import structure as s
    from dfconvert import df_store
-   df = df_store('EURUSD_tick_historicals_aug.h5').load_df()
-   
+   df = df_store('data.h5').load_df()
+   indep_col='d1'
+
    df = df.sample(n=50000)
-   def drop_col(df, col_names):
-       for col in col_names:
-           if col in df.columns:
-               df = df.drop(col, axis = 1)
-       return df
-   df = df.reset_index()
-   print(df.head())
-   df = s.date_split(df)
+   #df = df.reset_index()
    df = drop_col(df, ['aggdays', 'daysinmonth', 'Bar OPEN Bid Quote_lag-1'])
    print(df.head())
-   rf = do_rf(df, 'EURUSD.bid', n_estimators=5)
+   rf = do_rf(df, indep_col, n_estimators=5)
    print(rf.available_date_cols)
-   print(1)
    rf.predict_out(True)
-   print(2)
    rf.return_error_details()
    rf.print_score()
    rf.importances()
-   rf.tree_preds()
+   rf.tree_preds(graph = False)
