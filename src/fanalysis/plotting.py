@@ -21,109 +21,93 @@ date_attr = ['date', 'Year', 'Month', 'Week', 'Day', 'Dayofweek', 'Dayofyear',
             'aggdays']
 
 
-class plots:
+class graph_vars():
     """
     Produces graphs looping through time series a.k.a headers
     insert headers as list
-    --e.g. 1.   plots(df, None, 1) - can pass none into headers to plot all headers against date
-    --e.g. 2.   plots.graph_vars(df, ['rnd'], 1) - can run function directly
+
+
     """ 
-    def __init__(self, df, header = None, fmt='.', p = 0.05, seperate=False, legend = False, point=None):
-        self.df, self.header, self.fmt, self.p, self.seperate, self.legend, self.point = df, header, p, fmt, seperate, legend, point
+    def __init__(self, df, header = None, fmt='.', pause = 0.5, point=None, legend = False):
+        self.df, self.header, self.fmt, self.pause, self.legend, self.point = \
+            df, header, fmt, pause, legend, point
         self.date_col = self.df.select_dtypes(include=[np.datetime64]).columns[0]
         
+        day_diff = (self.df[self.date_col].max() -  self.df[self.date_col].min()).days
+
+        if day_diff>= 28:
+            self.ymd = True 
+        else:
+            self.ymd = False
+
         if self.header is None:
             self.header = df.columns.values
-        try:
-            list(self.header)
-        except:
-            raise ValueError("header should be a list")
 
-        self.graph_vars(self.df, self.header, self.p, self.seperate, False, self.point)
+    def _get_header(self):
+        return self.__header
 
-    @staticmethod
-    def graph_vars(df, header = None, fmt='.', p = 0.05, seperate=False, legend=False, point=None):
+    def _set_bar(self, value):
+        if not isinstance(value, list):
+            raise TypeError("header must be a list")
+        self.__header = value
+        
+    header = property(_get_header, _set_bar)
+
+    def plot(self):
         """
         Produces graphs looping through time series a.k.a headers
         insert headers as list
         point as datindex in df
         """ 
-        try:
-            date_col = self.date_col
-        except:
-            date_col = df.select_dtypes(include=[np.datetime64]).columns[0]
-        
+
         #set subplots
         fig, ax = plt.subplots()
 
         if Ipython.run_from_ipython() is False:
             plt.rcParams['figure.figsize'] = (15, 5)
-            try:
-                for h in header:
-                    if h not in date_attr and h != date_col:
-                        if point == None:
-                            #plt.plot(df[date_col], df[h], fmt)
-                            ax.plot(df[date_col], df[h], fmt, label = h)
-                            plt.title([h])
-                            ax_set.xlabel('Date')
-                            plt.pause(p)
-                            fig.autofmt_xdate()
-                            ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
-                            plt.show(block=False)
-                            #time.sleep(0.5)
-                            plt.close
-                        else: 
-                            ax.plot(df[date_col], df[h], 'b')
-                            ax.plot(df.loc[point, date_col] , df.loc[point, h] , fmt)
-                            ax.set_title([h])
-                            plt.xlabel('Date')
-                            #plt.pause(p)
-                            fig.autofmt_xdate()
-                            ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
-                            plt.show()
-                            #time.sleep(0.5)
-                            #plt.clf
-
-                        if h == header[-1]:
-                            plt.close('all')
-            except:
-                pass
-
-        elif Ipython.run_from_ipython() is True:
-            if seperate is False:
-                for h in header:
-                    if h not in date_attr and h != date_col:
-                            #plt.plot(df[date_col], df[h], fmt, label = h)
-                            ax.plot(df[date_col], df[h], fmt, label = h)
-                            if point != None:
-                                ax.plot(df.loc[point, date_col] , df.loc[point, h] , fmt)
-                            fig.autofmt_xdate()
-                            ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
-                            plt.show()
-
-                            if legend == True:
-                                plt.legend(loc = 'upper left')
-
-            elif seperate is True:
-                for h in header:
-                    if h not in date_attr:
-                        ax.plot(df[date_col], header) 
+            for h in self.header:
+                if h not in date_attr and h != self.date_col:  
+                    ax.plot(self.df[self.date_col], self.df[h], self.fmt, label = h)
+                    if self.point != None:
+                        ax.plot(self.df.loc[self.point, self.date_col], self.df.loc[self.point, h], self.fmt)
+                    ax.set_title([h])
+                    plt.xlabel('Date')
+                    plt.pause(self.pause)
+                    if self.ymd == True:
                         fig.autofmt_xdate()
                         ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
+                    
+                    plt.show(block=False)
+                    plt.pause(self.pause)
+                    plt.close
+
+                    if h == self.header[-1]:
+                        plt.close('all')
+
+
+        elif Ipython.run_from_ipython() is True:
+            for h in self.header:
+                if h not in date_attr and h != self.date_col:
+                        #plt.plot(self.df[self.date_col], self.df[h], self.fmt, label = h)
+                        ax.plot(self.df[self.date_col], self.df[h], self.fmt, label = h)
+                        if self.point != None:
+                            ax.plot(self.df.loc[self.point, self.date_col] , self.df.loc[self.point, h] , self.fmt)
+                        if self.ymd == True:
+                            fig.autofmt_xdate()
+                            ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
                         plt.show()
+                        if self.legend == True:
+                            plt.legend(loc = 'upper left')
+
 
 
        
 if __name__ == "__main__":
-    #from generatedata import data
-    #c = data(1000, "d").genseries()
-    #print(c.head())
-    #plots(c, None, 1)
-    #plots.graph_vars(df, ['rnd'], 1)
 
     from dfconvert import df_store
-    df=df_store('quanddata').load_df().reset_index()
-    print(df.head())
-    import pandas as pd
-    df=df.sort_index()
-    plots.graph_vars(df, ['Open'], point = 2)
+    df = df_store('bm').load_df()
+    #print(df.head())
+    #import pandas as pd
+    #df=df.sort_index()
+    
+    graph_vars(df, ['bm']).plot()

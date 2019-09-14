@@ -12,7 +12,7 @@ except ImportError:
 from generatedata import create_data
 import dfconvert as dfc
 import structure as s
-from plotting import plots
+from plotting import graph_vars
 
 from datetime import datetime, timedelta
 import pandas as pd
@@ -61,22 +61,18 @@ class run_pred():
     def update_df(self):
         start_date, finish_date = self.hmax, self.nmax
         #make sure historicals are up-to-date
-        try:
-            df_latest = download(start_date, finish_date)
-            print('latest data')
-            print(df_latest.head())
-            df_latest = df_latest.reset_index()
-            df_latest = s.date_split(df_latest)
-            rf.fix_missing(df_latest, df_latest[indep_col], indep_col, {})
-            print(df_latest.head())
-            self.df = pd.concat([self.df, df_latest], keys = list(df.columns), ignore_index=True, sort=False)
-            print('concat')
-            print(self.df.head())
-            del df_latest
-            #return new
-        except:
-            pass
-            #return self.df
+        df_latest = download(start_date, finish_date)
+        print('latest data')
+        print(df_latest.head())
+        df_latest = df_latest.reset_index()
+        df_latest = s.date_split(df_latest)
+        rf.fix_missing(df_latest, df_latest[indep_col], indep_col, {})
+        print(df_latest.head())
+        self.df = pd.concat([self.df, df_latest], keys = list(df.columns), ignore_index=True, sort=False)
+        print('concat')
+        print(self.df.head())
+        del df_latest
+
     
 
     def opt_estimator_fn(self):
@@ -146,9 +142,7 @@ if __name__ == "__main__":
 
         #make sure historicals are up-to-date       
         print(len(df))
-        #if a == 1:
-        #    dfc.df_store('EURUSD_tick_historicals.h5').store_df(df)
-        #    a = 0
+
         rp = run_pred(df, indep_col)
         print('here')
 
@@ -157,7 +151,7 @@ if __name__ == "__main__":
         rp.update_df()
         print(oosp.head())
         df_test = pd.merge(oosp, df, left_on='Date', right_on=date_col)  
-        plots(df_test, [indep_col, 'oos_pred'])
+        graph_vars(df_test, [indep_col, 'oos_pred']).plot()
         df_test['mean'] =  df[indep_col].mean()
         print(abs((df_test[indep_col]-df_test['mean']).mean()) - abs((df_test[indep_col]-df_test['oos_pred']).mean()))
 

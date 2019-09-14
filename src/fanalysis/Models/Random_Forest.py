@@ -247,7 +247,7 @@ class do_rf():
       if graph == True:
          self.graph_predictions()
       
-      return self.predictions
+      return pd.DataFrame(self.predictions)
 
    def graph_predictions(self):
 

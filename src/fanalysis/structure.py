@@ -8,9 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 try:
-    from fanalysis.plotting import plots
+    from fanalysis.plotting import graph_vars
 except ImportError:
-    from plotting import plots
+    from plotting import graph_vars
 
 class outlier_detect():
     """
@@ -66,7 +66,7 @@ class outlier_detect():
             tmp = self.df[(self.df[self.date_col]>=start) & (self.df[self.date_col]<=end)][[self.date_col, self.variable]]
             
             if remove != 't':
-                plots.graph_vars(tmp, [self.variable], point = i)
+                graph_vars(tmp, [self.variable], point = i).plot()
             #plt.plot(tmp[self.date_col], tmp[self.variable], 'b')
             #plt.plot(tmp.loc[i, self.date_col] , tmp.loc[i, self.variable] , 'rD')
             #plt.show()
@@ -210,7 +210,6 @@ if __name__ == '__main__':
     #df = a.zoom_in(remove_option=True)
     print(df.head())
     print('done')
-    #plots(df, None, 1)
 
 
 

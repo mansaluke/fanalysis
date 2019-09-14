@@ -13,7 +13,7 @@ except ImportError:
 from generatedata import data
 import dfconvert as dfc
 import structure as s
-from plotting import plots
+from plotting import graph_vars
 
 from datetime import datetime, timedelta
 import pandas as pd

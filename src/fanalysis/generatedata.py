@@ -47,7 +47,7 @@ class create_data:
     
     
     '''
-    def __init__(self, frequency, date = datetime.now(), num_periods=100, direction=None):
+    def __init__(self, frequency, date = datetime.now(), num_periods: 'int'=100, direction=None):
 
         self.freq = frequency
         self.date = date
@@ -110,12 +110,15 @@ class create_data:
 
 
 if __name__ == '__main__':
+    from dfconvert import df_store
+    
 
-    s = pd.to_datetime('01-01-2019')
     #print(pd.date_range(start = s, end=datetime.now(), freq='S'))
     #print(create_data('S', date = [s, datetime.now()]).gendateseries())
-    #print(create_data('S', date = datetime.now(), direction='Backwards').create_brownian_motion())
-    
+    df = create_data('S', date = datetime.now(), direction='Backwards').create_brownian_motion()
+    #df_store('bm').store_df(df)
+    #df = df_store('bm').load_df()
+    print(df.head())
     #import plotting as p
     #print(df.head())
     #p.plots(df)
