@@ -19,13 +19,16 @@ import pandas as pd
 
 import threading
 
+
 def download(start_date, finish_date):
     return dh.generate_market_data_for_tests(start_date, finish_date)
 
     
-def test_split_df(df, prop = 0.25):
-    df.sort_values(by=['date'], inplace=True)
+
+def test_split_df(df, date_col='Date', prop = 0.25):
+    df.sort_values(by=[date_col], inplace=True)
     return df[:round(len(df) *(1-prop))], df[round(len(df) * (1-prop)):]
+
 
 def update_decorator(func): 
     hmax, nmax = self.hmax, self.nmax
@@ -40,19 +43,25 @@ def update_decorator(func):
     update_df
     return update_after 
 
+
+
 class run_pred():
 
-    def __init__(self, df, indep_col):
+    def __init__(self, df, indep_col, date_col=None):
         self.df = df
         self.indep_col = indep_col
         self.max_estimators = 10
         self.opt_n_estimators = self.opt_estimator_fn()
         self.hmax, self.nmax = self.update_times()
 
+        if date_col == None:
+            try:
+                self.date_col = self.df.select_dtypes(include=[np.datetime64]).columns[0]
+            except AttributeError('No date column found')
 
     def update_times(self):
         df = self.df
-        start_date = df['date'].max()
+        start_date = df[date_col].max()
         finish_date = datetime.now()
         print(start_date, finish_date)
         print('updating: ' , finish_date - start_date)
@@ -103,7 +112,7 @@ class run_pred():
     def oos_pred(self):
         #create_data('S', date = [self.hmax, datetime.now()]).gendateseries()
         print(self.df.head())
-        osd = self.df['date'][self.df['date']>=self.hmax]
+        osd = self.df[date_col][self.df[date_col]>=self.hmax]
         print(osd.head())
         #osd = create_data("S", "Forward").gendateseries()
         #osd = s.date_split(osd, time=False)
@@ -113,8 +122,7 @@ class run_pred():
 
 if __name__ == "__main__":
     a=1
-    indep_col='d1'
-    date_col = 'date'
+    indep_col='EURUSD.bid'
     df = dfc.df_store('data.h5').load_df()
 
     df = rf.drop_col(df, ['d2', 'd2', 'd3', 'd4', 'v'])
@@ -123,9 +131,9 @@ if __name__ == "__main__":
     print(len(df))
     print(df.memory_usage(deep=True))
 
-    print('size: ', df.memory_usage().sum()/1000000, 'mb')
-
-    print(len(df))
+    #print('size: ', df.memory_usage().sum()/1000000, 'mb')
+    
+    
     if len(df) > 100000:
         df = df.sample(n=100000)
     

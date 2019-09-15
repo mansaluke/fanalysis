@@ -1,26 +1,13 @@
 import pandas as pd 
 import scipy
 from scipy import linalg
-from tkinter import *
-
-def print_s(text):
-    label=Label(root, text=text)
-    label.pack()
-
-#root=Tk()
-#print_s()
-#but<ton = Button(root, text="p", command = print_s)
-#button.pack()
-#root.mainloop()
 
 
 
 
 
 
-def df_properties(df):
-    print(df.describe())
-    print(df.isnull().sum())
+
 
 
 

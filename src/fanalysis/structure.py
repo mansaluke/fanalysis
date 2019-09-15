@@ -20,10 +20,10 @@ class outlier_detect():
     print(a.outliers)
     a.zoom_in(remove_option=True)
     """
-    def __init__(self, df, variable, xlen = 10, graph = False):        
+    def __init__(self, df, variable, top_n = 10, graph = False):        
         self.df = df.copy()
         self.variable = variable
-        self.xlen = xlen
+        self.top_n = top_n
         self.graph = graph
         self.date_col = df.select_dtypes(include=[np.datetime64]).columns[0]
 
@@ -32,19 +32,20 @@ class outlier_detect():
         if self.graph == True:
             self.graph_outliers()
 
-        delete_threshold = self.delete_threshold()
+        #delete_threshold = self.delete_threshold()
         
  
             
     def differences_collect(self):
+        print('searching for outliers...')
         largest = self.df[[self.variable]].copy(deep=False)
         largest['diff_t'] = np.sqrt(((largest[self.variable].shift(1) - largest[self.variable])/largest[self.variable])**2)*100
-        largest = largest.nlargest(self.xlen, 'diff_t')
+        largest = largest.nlargest(self.top_n, 'diff_t')
         return largest
 
     def graph_outliers(self):
         plt.style.use('fivethirtyeight')
-        x_values = list(range(self.xlen))
+        x_values = list(range(self.top_n))
         plt.bar(x_values, self.outliers['diff_t'], orientation='vertical')
         plt.ylabel('% diff')
         plt.title('outliers')
@@ -94,10 +95,10 @@ class outlier_detect():
         return self.df
 
 
-    def delete_threshold(self, t=10):
+    def delete_threshold(self, threshold_var=10):
         #deletes point with a variance greater or equal to threshold, t
 
-        anom_list = self.outliers[self.outliers.diff_t >= 10]
+        anom_list = self.outliers[self.outliers.diff_t >= threshold_var]
         anom_list = list(anom_list.reset_index()['index'])
 
         for i in anom_list:

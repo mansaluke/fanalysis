@@ -7,7 +7,7 @@ from pandas import DataFrame
 
 
 
-class create_data:
+class create_data():
     '''create data
     e.g.
     s = pd.to_datetime('01-01-2019')

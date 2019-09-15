@@ -10,7 +10,7 @@ except ImportError:
     from Models.Random_Forest import do_rf
     import Download.downloadhistoricals as dh
     import Models.Random_Forest as rf
-from generatedata import data
+from generatedata import create_data
 import dfconvert as dfc
 import structure as s
 from plotting import graph_vars
@@ -22,17 +22,9 @@ import pickle
 dfc.get_path()
 
 
+#dfc.df_store('data.h5').store_df(df)
 
-df = dfc.df_store('c').load_df()
-#df =df.reset_index()
-df = s.date_split(df)
-
-
-print(df.head())
-print(len(df))
-dfc.df_store('data.h5').store_df(df)
-
-df = dfc.df_store('data.h5').load_df()
+df = dfc.df_store('EURUSD_tick_historicals.h5').load_df()
 print(df.head())
 
 #import os
