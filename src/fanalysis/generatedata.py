@@ -3,7 +3,8 @@ import pandas as pd
 from datetime import datetime
 import random as rd
 from pandas import DataFrame
-
+from math import sqrt
+from scipy.stats import norm
 
 
 
@@ -57,6 +58,9 @@ class create_data():
         if isinstance(date, list):
             self.start=date[0]
             self.end=date[1]
+            if self.end < self.start:
+                self.end = date[0]
+                self.start = date[1]
         
         self.dates = self.gendateseries()
         self.length = len(self.dates)
@@ -70,7 +74,7 @@ class create_data():
             if self.direction == 'Backwards' or self.direction == 1:
                 dates = pd.date_range(end=self.date, periods=self.num_periods, freq=self.freq)
             elif self.direction == 'Forwards' or self.direction == -1:
-                dates = pd.date_range(start=self.date, periods=self.num_periods, freq=self.freq)         
+                dates = pd.date_range(start=self.date, periods=self.num_periods, freq=self.freq)       
         #else:
         #    raise AttributeError
         return DataFrame(dates, columns = ['Date'])
@@ -105,20 +109,21 @@ class create_data():
         X = (mu-0.5*sigma**2)*t + sigma*W ### ITO'S LEMMA
         S = S0*np.exp(X) ### geometric brownian motion ###
         return self.dates.assign(bm = S)
+
     
 
 
 
 if __name__ == '__main__':
-    from dfconvert import df_store
-    
 
     #print(pd.date_range(start = s, end=datetime.now(), freq='S'))
     #print(create_data('S', date = [s, datetime.now()]).gendateseries())
     df = create_data('S', date = datetime.now(), direction='Backwards').create_brownian_motion()
+    print(df.head())
+    
     #df_store('bm').store_df(df)
     #df = df_store('bm').load_df()
-    print(df.head())
+    #print(df.head())
     #import plotting as p
     #print(df.head())
     #p.plots(df)

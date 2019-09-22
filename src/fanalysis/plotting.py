@@ -70,19 +70,25 @@ class graph_vars():
                     ax.plot(self.df[self.date_col], self.df[h], self.fmt, label = h)
                     if self.point != None:
                         ax.plot(self.df.loc[self.point, self.date_col], self.df.loc[self.point, h], self.fmt)
-                    ax.set_title([h])
-                    plt.xlabel('Date')
-                    plt.pause(self.pause)
+
                     if self.ymd == True:
                         fig.autofmt_xdate()
                         ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
                     
-                    plt.show(block=False)
-                    plt.pause(self.pause)
-                    plt.close
+                    plt.xlabel('Date')
 
-                    if h == self.header[-1]:
-                        plt.close('all')
+                    if self.pause is not None:
+                        ax.set_title([h])
+                        plt.show(block=False)
+                        plt.pause(self.pause)
+                        plt.close
+
+                        if h == self.header[-1]:
+                            plt.close('all')
+
+            if self.pause is None:
+                ax.set_title(self.header)
+                plt.show()
 
 
         elif Ipython.run_from_ipython() is True:

@@ -1,40 +1,52 @@
+"""
+brownian() implements one dimensional Brownian motion (i.e. the Wiener process).
+"""
+
+from math import sqrt
+from scipy.stats import norm
+import numpy as np
+from pylab import plot, show, grid, xlabel, ylabel
 
 
-try:
-    from fanalysis.Models.optimize import optimize_rf
-    from fanalysis.Models.Random_Forest import do_rf
-    import fanalysis.Download.downloadhistoricals as dh
-    import fanalysis.Models.Random_Forest as rf
-except ImportError:
-    from Models.optimize import optimize_rf
-    from Models.Random_Forest import do_rf
-    import Download.downloadhistoricals as dh
-    import Models.Random_Forest as rf
-from generatedata import create_data
-import dfconvert as dfc
-import structure as s
-from plotting import graph_vars
+def brownian(delta: "The Wiener process parameter" = 2):
+    # The Wiener process parameter.
+    delta = 2
+    # Total time.
+    T = 10.0
+    # Number of steps.
+    N = 500
+    # Time step size
+    dt = T/N
+    # Number of realizations to generate.
+    m = 1
 
-from datetime import datetime, timedelta
-import pandas as pd
-import pickle
+    x = np.empty((m,N+1))
+    print(x)
+    x[:, 0] = 100
 
-dfc.get_path()
+    r = norm.rvs(size=x[:,0].shape + (N,), scale=delta*sqrt(dt))
 
+    np.cumsum(r, axis=-1, out=x[:,1:])
 
-#dfc.df_store('data.h5').store_df(df)
+    x[:,1:] += np.expand_dims(x[:,0], axis=-1)
 
-df = dfc.df_store('EURUSD_tick_historicals.h5').load_df()
-print(df.head())
+    out= x[:,1:]
+    return out
 
-#import os
+b = brownian()
+delta = 2
+# Total time.
+T = 10.0
+# Number of steps.
+N = 500
+# Time step size
+dt = T/N
+# Number of realiza
+m = 1
+t = np.linspace(0.0, N*dt, N+1)
+print(b[0])
+#for k in range(m):
+plot(t, b[0])
 #
-#scores = {} # scores is an empty dict already
-#
-#if os.path.getsize(target) > 0:      
-#    with open(target, "rb") as f:
-#        unpickler = pickle.Unpickler(f)
-#        # if file is not empty scores will be equal
-#        # to the value unpickled
-#        scores = unpickler.load()
+#show()
 
