@@ -1,52 +1,39 @@
-"""
-brownian() implements one dimensional Brownian motion (i.e. the Wiener process).
-"""
-
-from math import sqrt
-from scipy.stats import norm
-import numpy as np
-from pylab import plot, show, grid, xlabel, ylabel
 
 
-def brownian(delta: "The Wiener process parameter" = 2):
-    # The Wiener process parameter.
-    delta = 2
-    # Total time.
-    T = 10.0
-    # Number of steps.
-    N = 500
-    # Time step size
-    dt = T/N
-    # Number of realizations to generate.
-    m = 1
+class chk_1():
 
-    x = np.empty((m,N+1))
-    print(x)
-    x[:, 0] = 100
+    def __init__(self, my_int):
+        self.my_int = self.chk_int(my_int)
+        try:
+            self.chk_evendd(self.my_int)
+        except:
+            pass
 
-    r = norm.rvs(size=x[:,0].shape + (N,), scale=delta*sqrt(dt))
+    def chk_int(self, my_int):
+        try:
+            my_int  = int(my_int)
+            if my_int >=1 and my_int <= 10:
+                return my_int
+            else:
+                print('not between 1 and 10')
+        except:
+            print('must be integer') 
 
-    np.cumsum(r, axis=-1, out=x[:,1:])
+    
+    def chk_evendd(self, x: int):
+        if self.my_int % 2 == 0:
+            print('even')
+        elif self.my_int % 2 !=0:
+            print('odd')
+        else:
+            print('wow what is goign on')
 
-    x[:,1:] += np.expand_dims(x[:,0], axis=-1)
 
-    out= x[:,1:]
-    return out
 
-b = brownian()
-delta = 2
-# Total time.
-T = 10.0
-# Number of steps.
-N = 500
-# Time step size
-dt = T/N
-# Number of realiza
-m = 1
-t = np.linspace(0.0, N*dt, N+1)
-print(b[0])
-#for k in range(m):
-plot(t, b[0])
-#
-#show()
+
+while 1==1:
+    int_in = input('please input an integer from 1 to 10: ')
+    chk_1(int_in)
+
+
 
