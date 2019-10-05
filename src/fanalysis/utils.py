@@ -70,4 +70,29 @@ def df_describe(df, col_details = True, columns = None):
                       .format(col, str(df[col].dtype), df[col].memory_usage()/1000000))
                 #print(df[col].describe())
                 print('Number of nulls: ', df[col].isnull().sum())
-                
+
+
+
+
+
+
+
+def count_calls(cls):
+    #TODO function to count calls in any class
+    #call_count = {}
+
+    def check_call():
+        
+        for k, v in cls.__dict__.items():
+            print(k, v)
+    return check_call
+
+
+if __name__ == '__main__':
+
+    @count_calls
+    class test_class():
+        def __init__(self):
+            self.x = 5
+
+    a = test_class()

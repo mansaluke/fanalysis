@@ -22,8 +22,8 @@ if __name__ == "__main__":
       from generatedata import create_data
       from dfconvert import df_store
       import plotting as p
-      df = df_store('data.h5').load_df()
+      #df = df_store('data.h5').load_df()
       #print(df.head())  
-
+      
 
 
