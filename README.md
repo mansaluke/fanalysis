@@ -43,12 +43,10 @@ pip install -r "/path/to/requirements.txt"
 
 ## To be introduced/developed
 
-- Tick data and current data
+- Enhance APIs
+- Additional independent variables
 - Include finance specific structural functions
 - Improve performance - big data techniques (e.g. spark and hadoop)
 - Time series and neural network integration
 - Incorporate dynamic optimization model
-- Additional independent variables
-- Full integration of all modules
 - App gui
-- Automate continuous analysis

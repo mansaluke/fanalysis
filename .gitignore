@@ -14,3 +14,5 @@ src/fanalysis/print_gui_tool/
 src/fanalysis/testing.py
 src/fanalysis/timeseries.ipynb
 src/fanalysis/tree.dot
+src/fanalysis/test1.py
+tests/fanalysis

@@ -104,7 +104,7 @@ class create_data():
         s0 = start price
         """
         N = self.dates.size
-        T = ((self.dates.max()-self.dates.min())/np.timedelta64(1, 'D')) / 365
+        T = (self.dates.max()-self.dates.min())/np.timedelta64(1, 'D')
         dt = float(T)/N
         t = np.linspace(0, T, N)
         W = np.random.standard_normal(size=N)
@@ -222,7 +222,7 @@ if __name__ == '__main__':
     #print(pd.date_range(start = s, end=datetime.now(), freq='S'))
     #print(create_data('S', date = [s, datetime.now()]).gendateseries())
     #df = create_data('d', date = datetime.now(), direction='Backwards').generate_rand_df(0, 1)
-    df = create_data('d', date=datetime.now(),
+    df = create_data('s', date=datetime.now(),
                      direction='Backwards').create_brownian_motion()
 
     for i in range(10):
