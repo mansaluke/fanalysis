@@ -57,7 +57,8 @@ class run_pred():
         if date_col == None:
             try:
                 self.date_col = self.df.select_dtypes(include=[np.datetime64]).columns[0]
-            except AttributeError('No date column found')
+            except:
+                AttributeError('No date column found')
 
     def update_times(self):
         df = self.df
@@ -123,7 +124,7 @@ class run_pred():
 if __name__ == "__main__":
     a=1
     indep_col='EURUSD.bid'
-    df = dfc.df_store('data.h5').load_df()
+    df = dfc.df_store('EURUSD_tick_historicals_2019.h5').load_df()
 
     df = rf.drop_col(df, ['d2', 'd2', 'd3', 'd4', 'v'])
 
