@@ -1,14 +1,14 @@
 
 try:
-    from fanalysis.Models.optimize import optimize_rf
-    from fanalysis.Models.Random_Forest import do_rf
-    import fanalysis.Download.downloadhistoricals as dh
-    import fanalysis.Models.Random_Forest as rf
+    from fanalysis.models.optimize_random_forest import optimize_rf
+    from fanalysis.models.random_forest import do_rf
+    import fanalysis.download.downloadhistoricals as dh
+    import fanalysis.models.random_forest as rf
 except ImportError:
-    from Models.optimize import optimize_rf
-    from Models.Random_Forest import do_rf
-    import Download.downloadhistoricals as dh
-    import Models.Random_Forest as rf
+    from models.optimize_random_forest import optimize_rf
+    from models.random_forest import do_rf
+    import download.downloadhistoricals as dh
+    import models.random_forest as rf
 from generatedata import create_data
 import dfconvert as dfc
 import structure as s
@@ -160,7 +160,7 @@ if __name__ == "__main__":
         rp.update_df()
         print(oosp.head())
         df_test = pd.merge(oosp, df, left_on='Date', right_on=date_col)  
-        graph_vars(df_test, [indep_col, 'oos_pred']).plot()
+        graph_vars(df_test, [indep_col, 'oos_pred']).show()
         df_test['mean'] =  df[indep_col].mean()
         print(abs((df_test[indep_col]-df_test['mean']).mean()) - abs((df_test[indep_col]-df_test['oos_pred']).mean()))
 

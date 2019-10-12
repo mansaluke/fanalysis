@@ -7,9 +7,9 @@ register_matplotlib_converters()
 import numpy as np
 
 try:
-    from fanalysis.utils import Ipython
+    from fanalysis.src.fanalysis.utils import Ipython
 except ImportError:
-    from utils import Ipython
+    from fanalysis.utils import Ipython
 
 if Ipython.run_from_ipython()!=True:
     matplotlib.use('tkAgg')
@@ -40,20 +40,22 @@ class graph_vars():
         else:
             self.ymd = False
 
-        if self.header is None:
-            self.header = df.columns.values
-
-    def _get_header(self):
+    @property
+    def header(self):
         return self.__header
 
-    def _set_bar(self, value):
-        if not isinstance(value, list):
-            raise TypeError("header must be a list")
-        self.__header = value
+    @header.setter
+    def header(self, value):
+        if value is None:
+            print(1)
+            self.__header = self.df.columns.to_list()
+        else:
+            try:
+                self.__header = list(value)
+            except:
+                raise TypeError("header must be a list")
         
-    header = property(_get_header, _set_bar)
-
-    def plot(self):
+    def show(self):
         """
         Produces graphs looping through time series a.k.a headers
         insert headers as list
@@ -110,10 +112,4 @@ class graph_vars():
        
 if __name__ == "__main__":
 
-    from dfconvert import df_store
-    df = df_store('bm').load_df()
-    #print(df.head())
-    #import pandas as pd
-    #df=df.sort_index()
-    
-    graph_vars(df, ['bm']).plot()
+    pass

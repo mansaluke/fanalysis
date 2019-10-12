@@ -1,4 +1,3 @@
-#TODO: optimize rf
 import pandas as pd
 import numpy as np
 
@@ -17,6 +16,9 @@ except ImportError:
     from fanalysis.Models.Random_Forest import do_rf
 
 class optimize_rf(do_rf):
+    """
+    optimizes the number of trees in random forest by choosing model with max r2
+    """
     def __init__(self,
                 df,
                 indep_col = 'Bar OPEN Bid Quote',

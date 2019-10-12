@@ -16,3 +16,6 @@ src/fanalysis/timeseries.ipynb
 src/fanalysis/tree.dot
 src/fanalysis/test1.py
 tests/fanalysis
+data/
+env/
+finmarketpy.log

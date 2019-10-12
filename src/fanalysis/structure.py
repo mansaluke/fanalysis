@@ -67,7 +67,7 @@ class outlier_detect():
             tmp = self.df[(self.df[self.date_col]>=start) & (self.df[self.date_col]<=end)][[self.date_col, self.variable]]
             
             if remove != 't':
-                graph_vars(tmp, [self.variable], point = i).plot()
+                graph_vars(tmp, [self.variable], point = i).show()
             #plt.plot(tmp[self.date_col], tmp[self.variable], 'b')
             #plt.plot(tmp.loc[i, self.date_col] , tmp.loc[i, self.variable] , 'rD')
             #plt.show()

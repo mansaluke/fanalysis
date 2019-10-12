@@ -1,9 +1,14 @@
+#################imports#################################
 import unittest
 from pandas.util.testing import assert_frame_equal
 
 from fanalysis.src.fanalysis import generatedata
 
 from datetime import datetime, timedelta
+
+##########################################################
+
+
 
 time_start = datetime.now()
 diff = 50
@@ -21,7 +26,15 @@ df_2 = generatedata.create_data_sef(time_start, time_start, 's').gendateseries()
 df_3 = generatedata.create_data_sef(time_start, time_start, 's').gendateseries()
 df_4 = generatedata.append_data(df_3).dates
 
+
+
+
+
+
 class TestDataFrameMethods(unittest.TestCase):
+    """
+    tests output of generatedata module functions
+    """
     def test_headers(self):
         self.assertEqual(df_1.columns.to_list(), \
             ['Date', 'bm', 'bm1', 'bm2'])
