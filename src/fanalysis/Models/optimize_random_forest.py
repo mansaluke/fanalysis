@@ -4,16 +4,16 @@ import numpy as np
 import sys
 try:
     sys.path.append('fanalysis')
-    sys.path.append('fanalysis/Models')
+    sys.path.append('fanalysis/models')
 except:
     pass
 
 try:
-    import Models.Random_Forest as r
-    from Models.Random_Forest import do_rf
+    import models.random_forest as r
+    from models.random_forest import do_rf
 except ImportError:
-    import fanalysis.Models.Random_Forest as r
-    from fanalysis.Models.Random_Forest import do_rf
+    import fanalysis.src.fanalysis.models.random_forest as r
+    from fanalysis.src.fanalysis.models.random_forest import do_rf
 
 class optimize_rf(do_rf):
     """
@@ -81,14 +81,13 @@ if __name__ == "__main__":
     #import dfconvert as dfc
     #df = dfc.df_store('data.h5').load_df()
     #df = df.sample(n=100000)
-#
+
     #def test_split_df(df, prop = 0.25):
     #    df.sort_values(by=['date'], inplace=True)
     #    return df[:round(len(df) *(1-prop))], df[round(len(df) * (1-prop)):]
     #
     #df, test = test_split_df(df)
-#
-#
+
     #orf =  optimize_rf(df, n_estimators=100, indep_col = 'd1' )        
     #opt_n_estimators = orf.opt_n_estimators
     #rf = r.do_rf(df, n_estimators=opt_n_estimators, indep_col = 'd1')

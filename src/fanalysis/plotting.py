@@ -7,9 +7,12 @@ register_matplotlib_converters()
 import numpy as np
 
 try:
-    from fanalysis.src.fanalysis.utils import Ipython
+    try:
+        from fanalysis.utils import Ipython
+    except ImportError:
+        from utils import Ipython
 except ImportError:
-    from fanalysis.utils import Ipython
+    from fanalysis.src.fanalysis.utils import Ipython
 
 if Ipython.run_from_ipython()!=True:
     matplotlib.use('tkAgg')
@@ -47,7 +50,6 @@ class graph_vars():
     @header.setter
     def header(self, value):
         if value is None:
-            print(1)
             self.__header = self.df.columns.to_list()
         else:
             try:

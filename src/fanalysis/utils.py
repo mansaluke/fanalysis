@@ -17,9 +17,6 @@ class Ipython():
             return False
 
 
-
-
-
 class timing():
     import threading
     from datetime import datetime, timedelta

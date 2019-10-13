@@ -242,25 +242,33 @@ class do_rf():
       draw_tree(self.rf.estimators_[self.n_estimators-1], list(self.features.columns), size=size, ratio=ratio, precision=precision, max_depth=max_depth)
 
    def predict_out(self, graph = True):
-      self.rf.fit(self.train_dependent, self.train_independent)
-      self.predictions = self.rf.predict(self.valid_dependent)
+      """
+      produces predictions on validation set
+      """
+      try:
+         self.rf.fit(self.train_dependent, self.train_independent)
+      except:
+         ValueError("Check dependant variables available.")
+
+      valid_dates =pd.to_datetime(self.valid_dependent[self.available_date_cols])
+      self.prediction_data = pd.DataFrame(data = {self.date_col: valid_dates, 'prediction': self.rf.predict(self.valid_dependent)})
+
       if graph == True:
          self.graph_predictions()
       
-      return pd.DataFrame(self.predictions)
+      return pd.DataFrame(self.prediction_data)
 
    def graph_predictions(self):
-
+      """
+      graphs in and out-of-sample predictions
+      """
       test_dates =pd.to_datetime(self.train_dependent[self.available_date_cols])
-      valid_dates =pd.to_datetime(self.valid_dependent[self.available_date_cols])
-      #maxd=valid_dates = max(df['Date'])
-      #self.valid_dependent['prediction'] = self.predictions
       fitted_data = pd.DataFrame(data = {self.date_col: test_dates, 'fit': self.rf.predict(self.train_dependent)})
-      prediction_data = pd.DataFrame(data = {self.date_col: valid_dates, 'prediction': self.predictions})
+      
       fig, ax = plt.subplots()
       ax.plot(self.df[self.date_col], self.df[self.indep_col], 'b.', label = 'actual')
       ax.plot(fitted_data[self.date_col], fitted_data['fit'], 'r.', label = 'fit')
-      ax.plot(prediction_data[self.date_col], prediction_data['prediction'], 'g.', label = 'prediction')
+      ax.plot(self.prediction_data[self.date_col], self.prediction_data['prediction'], 'g.', label = 'prediction')
       fig.autofmt_xdate()
       ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
       ax.set_title('Actual and Predicted Values'); plt.xlabel(self.date_col); plt.ylabel('rate')
@@ -287,7 +295,7 @@ class do_rf():
    def return_error_details(self, to_return = 'mean'):
 
       baseline_errors = self.error_calc(self.df.loc[:,self.indep_col].mean(), self.valid_independent)
-      rfprediction_errors = self.error_calc(self.predictions, self.valid_independent)
+      rfprediction_errors = self.error_calc(self.prediction_data['prediction'], self.valid_independent)
       mean_baseline_error = np.mean(baseline_errors)
       mean_rfprediction_error = np.mean(rfprediction_errors)
       mean_error_difference = mean_baseline_error - mean_rfprediction_error
@@ -340,8 +348,8 @@ class do_rf():
    def feature_analysis(self, col, graph = True):
 
       x = self.df.sample(n = self.split_shape[0][0]) 
-      x['prediction_std'] = np.std(self.predictions, axis=0).size
-      x['prediction'] = np.mean(self.predictions, axis=0)
+      x['prediction_std'] = np.std(self.prediction_data['prediction'], axis=0).size
+      x['prediction'] = np.mean(self.prediction_data['prediction'], axis=0)
 
       if graph == True:
          x[col].value_counts().plot.barh()

@@ -13,9 +13,11 @@ from generatedata import create_data
 import dfconvert as dfc
 import structure as s
 from plotting import graph_vars
+import utils
 
 from datetime import datetime, timedelta
 import pandas as pd
+import numpy as np
 
 import threading
 
@@ -23,7 +25,7 @@ import threading
 def download(start_date, finish_date):
     return dh.generate_market_data_for_tests(start_date, finish_date)
 
-    
+
 
 def test_split_df(df, date_col='Date', prop = 0.25):
     df.sort_values(by=[date_col], inplace=True)
@@ -46,44 +48,53 @@ def update_decorator(func):
 
 
 class run_pred():
-
+    """
+    continuously runs optimization modules and extracts output (for now just optimize_random_forest) 
+    """
     def __init__(self, df, indep_col, date_col=None):
         self.df = df
         self.indep_col = indep_col
         self.max_estimators = 10
         self.opt_n_estimators = self.opt_estimator_fn()
-        self.hmax, self.nmax = self.update_times()
-
+        
         if date_col == None:
             try:
                 self.date_col = self.df.select_dtypes(include=[np.datetime64]).columns[0]
             except:
-                AttributeError('No date column found')
+                raise AttributeError('No date column found')
+        else:
+            self.date_col = date_col
+        print(self.df.head())
+        print('date col: ', date_col)
+        print(self.date_col)
+        self.hmax, self.nmax = self.update_times()
 
     def update_times(self):
-        df = self.df
-        start_date = df[date_col].max()
+        start_date = self.df[self.date_col].max()
         finish_date = datetime.now()
         print(start_date, finish_date)
         print('updating: ' , finish_date - start_date)
         return start_date, finish_date
 
     def update_df(self):
-        start_date, finish_date = self.hmax, self.nmax
         #make sure historicals are up-to-date
-        df_latest = download(start_date, finish_date)
-        print('latest data')
-        print(df_latest.head())
-        df_latest = df_latest.reset_index()
-        df_latest = s.date_split(df_latest)
-        rf.fix_missing(df_latest, df_latest[indep_col], indep_col, {})
-        print(df_latest.head())
-        self.df = pd.concat([self.df, df_latest], keys = list(df.columns), ignore_index=True, sort=False)
-        print('concat')
-        print(self.df.head())
-        del df_latest
+        start_date, finish_date = self.hmax, self.nmax
 
-    
+        try:
+            df_latest = download(start_date, finish_date)
+            print('new data: ')
+            print(df_latest.head())
+            df_latest = df_latest.reset_index()
+            df_latest = s.date_split(df_latest)
+            rf.fix_missing(df_latest, df_latest[indep_col], indep_col, {})
+
+            self.df = pd.concat([self.df, df_latest], keys = list(df.columns), ignore_index=True, sort=False)
+            print('new data has been joined to df')
+            print(self.df.head())
+            del df_latest
+        except:
+            print('Could not update')
+
 
     def opt_estimator_fn(self):
         """optimizes rf model"""
@@ -122,47 +133,39 @@ class run_pred():
 
 
 if __name__ == "__main__":
-    a=1
+
     indep_col='EURUSD.bid'
-    df = dfc.df_store('EURUSD_tick_historicals_2019.h5').load_df()
+    df = dfc.df_store('EURUSD_tick_historicals_2019_post.h5').load_df()
+    date_col = 'Date'
 
-    df = rf.drop_col(df, ['d2', 'd2', 'd3', 'd4', 'v'])
-
-    print(df.head())
-    print(len(df))
-    print(df.memory_usage(deep=True))
-
-    #print('size: ', df.memory_usage().sum()/1000000, 'mb')
-    
-    
-    if len(df) > 100000:
-        df = df.sample(n=100000)
-    
-    print(df.head())
-    #rf.fix_missing(df, df[indep_col], indep_col, {})
-
-    #a = optimize_rf(df, indep_col, n_estimators=5)
-    #print(a.opt_n_estimators)
-    #a.predict_out()
+    utils.df_describe(df)
 
     print('entering loop')
 
     while 1==1:
 
-        #make sure historicals are up-to-date       
-        print(len(df))
-
+        # by initiating the run_pred class we find the optimal number of trees in the existing dataset 
+        # and we identify the difference between the end point of the historical data and our current date.
+        # this is used later to update our dataset
         rp = run_pred(df, indep_col)
         print('here')
 
-        #run model on historicals
+        #run model on historicals using the optimal number of trees. out-of-sample preds are assigned to variable oosp
         oosp = rp.create_pred()
+
+        #now we update our df with the latest data
         rp.update_df()
         print(oosp.head())
-        df_test = pd.merge(oosp, df, left_on='Date', right_on=date_col)  
-        graph_vars(df_test, [indep_col, 'oos_pred']).show()
+
+        # we join our previous out-of-sample predictions to check how well they did against the real data
+        df_test = pd.merge(oosp, df, left_on='Date', right_on=date_col) 
+
+        #visualise predictions 
+        graph_vars(df_test, [indep_col, 'prediction'], pause=None).show()
+        
+        #compare prediction against the mean
         df_test['mean'] =  df[indep_col].mean()
-        print(abs((df_test[indep_col]-df_test['mean']).mean()) - abs((df_test[indep_col]-df_test['oos_pred']).mean()))
+        print(abs((df_test[indep_col]-df_test['mean']).mean()) - abs((df_test[indep_col]-df_test['prediction']).mean()))
 
 
 
