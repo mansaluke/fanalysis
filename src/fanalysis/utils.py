@@ -52,12 +52,18 @@ def df_describe(df, col_details = True, columns = None):
     col_details : column analysis
     
     """
-    
-    print('Number of rows: {:23} \nNumber of columns: {:20} \nDataframe size: {:20} mb'
-          .format(len(df), len(df.columns), df.memory_usage().sum()/1000000))
+    try: #for pandas series compatability
+        print('Number of rows: {:23} \nNumber of columns: {:20} \nDataframe size: {:20} mb'
+              .format(len(df), len(df.columns), df.memory_usage().sum()/1000000))
+    except:
+         print('Number of rows: {:23} \nDataframe size: {:20} mb'
+              .format(len(df), df.memory_usage().sum()/1000000))       
 
     if df_islarge(df):
         print('Large dataset warning')
+
+    print('head: ')
+    print(df.head())
     
     if col_details == True:
         if columns == None:
