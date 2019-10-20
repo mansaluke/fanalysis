@@ -2,8 +2,11 @@ import sys, os
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from datetime import datetime
 
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+#matplotlib.use('Agg')
+
 import pandas as pd
 from pandas.api.types import is_string_dtype, is_numeric_dtype, is_categorical_dtype
 import numpy as np
@@ -272,7 +275,12 @@ class do_rf():
       fig.autofmt_xdate()
       ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
       ax.set_title('Actual and Predicted Values'); plt.xlabel(self.date_col); plt.ylabel('rate')
-      plt.show()
+      try:
+         plt.show()
+         plt.pause(5)
+         plt.close
+      except:
+         pass
 
    def out_of_sample_pred(self, sample_to_predict, graph =True, date_col = 'Date'):
 
@@ -341,7 +349,12 @@ class do_rf():
          plt.bar(x_values, importances, orientation='vertical')
          plt.xticks(x_values, list(self.features.columns), rotation='vertical')
          plt.ylabel('Importance');plt.xlabel('Variable');plt.title('var importance')
-         plt.show()
+         try:
+            plt.show()
+            plt.pause(5)
+            plt.close
+         except:
+            pass
 
       return feature_importances
 

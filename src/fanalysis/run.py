@@ -80,20 +80,18 @@ class run_pred():
         #make sure historicals are up-to-date
         start_date, finish_date = self.hmax, self.nmax
 
-        try:
-            df_latest = download(start_date, finish_date)
-            print('new data: ')
-            print(df_latest.head())
-            df_latest = df_latest.reset_index()
-            df_latest = s.date_split(df_latest)
-            rf.fix_missing(df_latest, df_latest[indep_col], indep_col, {})
-
-            self.df = pd.concat([self.df, df_latest], keys = list(df.columns), ignore_index=True, sort=False)
-            print('new data has been joined to df')
-            print(self.df.head())
-            del df_latest
-        except:
-            print('Could not update')
+        #try:
+        df_latest = download(start_date, finish_date)
+        print('new data: ')
+        print(df_latest.head())
+        df_latest = df_latest.reset_index()
+        df_latest = s.date_split(df_latest)
+        rf.fix_missing(df_latest, df_latest[indep_col], indep_col, {})
+        self.df = pd.concat([self.df, df_latest], keys = list(df.columns), ignore_index=True, sort=False)
+        print('new data has been joined to df')
+        return self.df
+        #except:
+        #    print('Could not update')
 
 
     def opt_estimator_fn(self):
@@ -106,7 +104,7 @@ class run_pred():
         return opt_n_estimators
 
     def create_pred(self):    
-        """creates predictions"""
+        """creates predictions using opt no. estimators on validation set."""
         
         rf = do_rf(self.df, n_estimators=self.opt_n_estimators, indep_col = indep_col)
         preds = rf.predict_out(graph=False)
@@ -152,11 +150,17 @@ if __name__ == "__main__":
 
         #run model on historicals using the optimal number of trees. out-of-sample preds are assigned to variable oosp
         oosp = rp.create_pred()
-
-        #now we update our df with the latest data
-        rp.update_df()
+        print('out-of-sample preds:')
         print(oosp.head())
 
+        print('updating dataframe with the latest data')
+        #try:
+        df = rp.update_df()
+        print(df.head())
+        #except:
+        print('update df failed')
+
+        
         # we join our previous out-of-sample predictions to check how well they did against the real data
         df_test = pd.merge(oosp, df, left_on='Date', right_on=date_col) 
 
