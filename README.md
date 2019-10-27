@@ -1,16 +1,12 @@
 
 # ML for Financial Analysis (fanalysis)
 
-## Objectives
+Downloads foreign exchange rates and perform predictive analyses using various techniques, including the following:
 
-Download exchange rates and perform predictive analyses using various techniques, including the following:
-
-- Standard Econometric Time Series Forecasts
 - Machine\deep learning models e.g. Random forests, Neural networks etc
 
-**Finally, the forecasts will be used as inputs in a dynamic optimization (mean variance) model which identifies the optimal portfolio of the set of rates.**
 
-## Current funcionality
+## Current functionality
 
 - Create dummy data.
 - Download historical data (m1).
@@ -41,12 +37,3 @@ pip install -r "/path/to/requirements.txt"
 
 ```
 
-## To be introduced/developed
-
-- Enhance APIs
-- Additional independent variables
-- Include finance specific structural functions
-- Improve performance - big data techniques (e.g. spark and hadoop)
-- Time series and neural network integration
-- Incorporate dynamic optimization model
-- App gui
